@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 100">
+  <!-- Báltica Education - Full Wordmark -->
+  <!-- Colors: Navy #102050, Turquoise #10B0C0, Secondary #4A627A -->
+
+  <!-- Main text: Báltica -->
+  <text x="10" y="55" font-family="'Avenir Next', 'Inter', system-ui, sans-serif" font-weight="700" font-size="42" letter-spacing="-1" fill="#102050">
+    Báltica
+  </text>
+
+  <!-- Turquoise underline bar -->
+  <rect x="10" y="62" width="152" height="4" fill="#10B0C0" rx="1" />
+
+  <!-- Subtitle: EDUCATION -->
+  <text x="10" y="88" font-family="'Avenir Next', 'Inter', system-ui, sans-serif" font-weight="400" font-size="18" letter-spacing="2" fill="#4A627A">
+    EDUCATION
+  </text>
+</svg>

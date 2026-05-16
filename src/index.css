@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* BÁLTICA Brand Colors */
+    --baltica-navy: 225 67% 19%;      /* #102050 */
+    --baltica-blue-mid: 202 67% 38%;  /* #2070A0 */
+    --baltica-turquoise: 185 85% 41%; /* #10B0C0 */
+    --baltica-green-light: 96 56% 72%;/* #B0E090 */
+
+    /* Theme Colors - Light Mode */
+    --background: 0 0% 100%;
+    --foreground: 225 67% 19%; /* Navy for text per brand guidelines */
+
+    --card: 0 0% 99%;
+    --card-foreground: 225 67% 19%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 67% 19%;
+
+    --primary: 185 85% 41%; /* Turquoise - brand primary */
+    --primary-foreground: 0 0% 100%; /* White */
+
+    --secondary: 202 67% 38%; /* Blue Mid */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 212 27% 38%; /* #4A627A per brand textSecondary */
+
+    --accent: 96 56% 72%; /* Green Light */
+    --accent-foreground: 225 67% 19%;
+
+    --success: 96 56% 50%;
+    --success-foreground: 0 0% 100%;
+
+    --destructive: 0 60% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+    --ring: 185 85% 41%; /* Turquoise for focus */
+
+    --radius: 0.75rem; /* 12px per brand guidelines */
+
+    /* Custom tokens */
+    --gradient-brand: linear-gradient(135deg, hsl(var(--baltica-turquoise)) 0%, hsl(var(--baltica-green-light)) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(var(--baltica-turquoise)) 0%, hsl(var(--baltica-blue-mid)) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(var(--baltica-green-light)) 0%, hsl(210 20% 96%) 100%);
+    --shadow-soft: 0 4px 20px -4px hsl(225 67% 19% / 0.08);
+    --shadow-card: 0 2px 12px -2px hsl(225 67% 19% / 0.06);
+  }
+
+  .dark {
+    /* BÁLTICA Brand Colors (same in dark) */
+    --baltica-navy: 225 67% 19%;
+    --baltica-blue-mid: 202 67% 38%;
+    --baltica-turquoise: 185 85% 41%;
+    --baltica-green-light: 96 56% 72%;
+
+    /* Theme Colors - Dark Mode */
+    --background: 225 40% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 225 35% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 225 35% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 185 85% 45%; /* Slightly brighter turquoise for dark mode */
+    --primary-foreground: 225 40% 8%;
+
+    --secondary: 202 50% 45%;
+    --secondary-foreground: 210 20% 95%;
+
+    --muted: 225 30% 18%;
+    --muted-foreground: 210 15% 60%;
+
+    --accent: 96 45% 55%;
+    --accent-foreground: 225 40% 8%;
+
+    --success: 96 45% 45%;
+    --success-foreground: 210 20% 95%;
+
+    --destructive: 0 50% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 225 25% 20%;
+    --input: 225 25% 20%;
+    --ring: 185 85% 45%;
+
+    --gradient-brand: linear-gradient(135deg, hsl(185 85% 40%) 0%, hsl(96 45% 50%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(185 85% 40%) 0%, hsl(202 50% 40%) 100%);
+    --gradient-calm: linear-gradient(135deg, hsl(96 45% 35%) 0%, hsl(225 30% 15%) 100%);
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 2px 12px -2px hsl(0 0% 0% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Typography scale per brand guidelines (base 16px, 1.25 ratio) */
+  h1 {
+    @apply text-3xl md:text-5xl font-semibold;
+    /* 32px mobile, 48px desktop */
+  }
+
+  h2 {
+    @apply text-2xl md:text-4xl font-semibold;
+    /* 28px mobile, 38px desktop */
+  }
+
+  h3 {
+    @apply text-xl md:text-3xl font-medium;
+    /* 24px mobile, 30px desktop */
+  }
+
+  h4 {
+    @apply text-lg md:text-2xl font-medium;
+    /* 20px mobile, 24px desktop */
+  }
+}
+
+@layer utilities {
+  .gradient-brand {
+    background: var(--gradient-brand);
+  }
+
+  .gradient-warm {
+    background: var(--gradient-warm);
+  }
+
+  .gradient-calm {
+    background: var(--gradient-calm);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Brand color utilities */
+  .text-baltica-navy {
+    color: hsl(var(--baltica-navy));
+  }
+
+  .text-baltica-turquoise {
+    color: hsl(var(--baltica-turquoise));
+  }
+
+  .bg-baltica-navy {
+    background-color: hsl(var(--baltica-navy));
+  }
+
+  .bg-baltica-turquoise {
+    background-color: hsl(var(--baltica-turquoise));
+  }
+
+  .bg-baltica-green-light {
+    background-color: hsl(var(--baltica-green-light));
+  }
+}

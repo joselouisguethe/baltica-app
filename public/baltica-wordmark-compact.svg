@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50">
+  <!-- Báltica - Compact Wordmark (no EDUCATION subtitle) -->
+  <!-- Colors: Navy #102050, Turquoise #10B0C0 -->
+
+  <!-- Main text: Báltica -->
+  <text x="5" y="32" font-family="'Avenir Next', 'Inter', system-ui, sans-serif" font-weight="700" font-size="32" letter-spacing="-0.5" fill="#102050">
+    Báltica
+  </text>
+
+  <!-- Turquoise underline bar -->
+  <rect x="5" y="38" width="115" height="3" fill="#10B0C0" rx="1" />
+</svg>

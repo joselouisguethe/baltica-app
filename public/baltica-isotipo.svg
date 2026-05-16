@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 110" fill="none">
+  <!-- BÁLTICA Isotipo - Faceted "B" letter -->
+  <!-- Proportions: wider lower bump, blocky square shape -->
+  <!-- Colors: Green Light top-left, Turquoise middle, Blue Mid lower, Navy bottom -->
+
+  <!-- === TOP-LEFT VERTICAL BAR (Green zone) === -->
+  <polygon points="8,4 40,4 40,22 8,22" fill="#B0E090"/>
+  <polygon points="8,4 24,4 16,13" fill="#A0D880"/>
+  <polygon points="24,4 40,4 32,13" fill="#C0E8A0"/>
+
+  <polygon points="8,22 40,22 40,42 8,42" fill="#80C860"/>
+  <polygon points="8,22 8,42 24,32" fill="#90D070"/>
+  <polygon points="40,22 40,42 24,32" fill="#98D478"/>
+
+  <!-- === TOP-RIGHT BUMP (Green to Turquoise) === -->
+  <polygon points="40,4 78,4 88,14 78,26 40,22" fill="#50C890"/>
+  <polygon points="40,4 60,4 50,13" fill="#70D088"/>
+  <polygon points="60,4 78,4 70,14" fill="#40C088"/>
+  <polygon points="78,4 88,14 83,9" fill="#30B880"/>
+
+  <!-- Right edge of upper bump -->
+  <polygon points="88,14 88,36 78,26" fill="#20A8B0"/>
+  <polygon points="88,14 88,25 83,20" fill="#28B0B8"/>
+  <polygon points="88,25 88,36 83,30" fill="#18A0A8"/>
+
+  <!-- === UPPER CAVITY (white) === -->
+  <polygon points="40,26 74,26 78,32 74,42 40,42" fill="#FFFFFF"/>
+
+  <!-- === MIDDLE BRIDGE (Turquoise zone) === -->
+  <polygon points="8,42 40,42 40,50 8,50" fill="#30B8A0"/>
+  <polygon points="8,42 8,50 18,46" fill="#28B098"/>
+
+  <polygon points="40,42 78,46 88,36 88,56 78,62 40,58" fill="#10B0C0"/>
+  <polygon points="40,42 60,44 50,50" fill="#20B8C0"/>
+  <polygon points="78,46 88,36 88,46" fill="#18A8B8"/>
+  <polygon points="78,46 88,46 88,56 78,56" fill="#1098B0"/>
+  <polygon points="78,56 88,56 78,62" fill="#0890A8"/>
+
+  <!-- === LEFT BAR LOWER (Blue Mid zone) === -->
+  <polygon points="8,50 40,50 40,58 8,58" fill="#2898B0"/>
+  <polygon points="8,58 40,58 40,82 8,82" fill="#2070A0"/>
+  <polygon points="8,58 8,82 24,70" fill="#186898"/>
+  <polygon points="40,58 40,82 24,70" fill="#2478A8"/>
+
+  <!-- === LOWER BUMP (Blue Mid to Navy) === -->
+  <polygon points="40,58 82,62 92,56 92,88 82,96 40,92" fill="#1870A0"/>
+  <polygon points="40,58 62,60 50,68" fill="#2078A8"/>
+  <polygon points="82,62 92,56 92,70" fill="#106890"/>
+  <polygon points="92,70 92,88 87,79" fill="#105880"/>
+  <polygon points="82,96 92,88 92,96" fill="#104870"/>
+
+  <!-- === LOWER CAVITY (white) === -->
+  <polygon points="40,66 76,68 82,76 76,88 40,88" fill="#FFFFFF"/>
+
+  <!-- === BOTTOM BAR (Navy zone) === -->
+  <polygon points="8,82 40,82 40,92 8,92" fill="#185888"/>
+  <polygon points="8,82 8,92 18,87" fill="#184878"/>
+
+  <polygon points="8,92 82,96 92,96 92,106 8,106" fill="#102050"/>
+  <polygon points="8,92 40,92 40,99 8,99" fill="#183868"/>
+  <polygon points="40,92 82,96 62,98" fill="#144060"/>
+  <polygon points="8,99 92,102 92,106 8,106" fill="#102050"/>
+</svg>
