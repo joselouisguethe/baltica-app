@@ -29,8 +29,8 @@ DOMAIN="balticaeducation.com"
 echo -e "${YELLOW}Step 1/8: Updating system...${NC}"
 apt update && apt upgrade -y
 
-echo -e "${YELLOW}Step 2/8: Installing Node.js 20...${NC}"
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+echo -e "${YELLOW}Step 2/8: Installing Node.js LTS...${NC}"
+curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
 apt install -y nodejs
 
 echo -e "${YELLOW}Step 3/8: Installing PostgreSQL...${NC}"
