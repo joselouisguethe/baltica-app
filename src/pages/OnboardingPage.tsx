@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Sparkles, Calendar, CheckCircle, ArrowRight, ArrowLeft, Clock } from 'lucide-react';
+import { Sparkles, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function OnboardingPage() {
@@ -14,9 +11,7 @@ export default function OnboardingPage() {
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedTime, setSelectedTime] = useState('morning');
-  const [customTime, setCustomTime] = useState('08:00');
-  const totalSteps = 3;
+  const totalSteps = 2;
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -31,13 +26,8 @@ export default function OnboardingPage() {
   };
 
   const handleComplete = () => {
-    // Save onboarding completion and reminder time
-    const reminderTime = selectedTime === 'custom' ? customTime :
-      selectedTime === 'morning' ? '08:00' :
-      selectedTime === 'afternoon' ? '14:00' : '20:00';
-
     setOnboardingCompleted(true);
-    setPreferredReminderTime(reminderTime);
+    setPreferredReminderTime('08:00');
 
     navigate('/payment');
   };
@@ -47,11 +37,6 @@ export default function OnboardingPage() {
       icon: Sparkles,
       title: t('onboarding.step1.title'),
       text: t('onboarding.step1.text'),
-    },
-    {
-      icon: Clock,
-      title: t('onboarding.step2.title'),
-      text: t('onboarding.step2.text'),
     },
     {
       icon: CheckCircle,
@@ -69,7 +54,7 @@ export default function OnboardingPage() {
       <div className="w-full px-4 py-6">
         <div className="max-w-md mx-auto">
           <div className="flex gap-2">
-            {[1, 2, 3].map((step) => (
+            {[1, 2].map((step) => (
               <div
                 key={step}
                 className={`h-1 flex-1 rounded-full transition-colors ${
@@ -110,52 +95,6 @@ export default function OnboardingPage() {
                   {currentStepData.text}
                 </p>
               </div>
-
-              {/* Step-specific content */}
-              {currentStep === 2 && (
-                <Card className="shadow-card mb-8">
-                  <CardContent className="pt-6">
-                    <RadioGroup
-                      value={selectedTime}
-                      onValueChange={setSelectedTime}
-                      className="space-y-3"
-                    >
-                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                        <RadioGroupItem value="morning" id="morning" />
-                        <Label htmlFor="morning" className="flex-1 cursor-pointer">
-                          {t('onboarding.time.morning')}
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                        <RadioGroupItem value="afternoon" id="afternoon" />
-                        <Label htmlFor="afternoon" className="flex-1 cursor-pointer">
-                          {t('onboarding.time.afternoon')}
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                        <RadioGroupItem value="evening" id="evening" />
-                        <Label htmlFor="evening" className="flex-1 cursor-pointer">
-                          {t('onboarding.time.evening')}
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-3 p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
-                        <RadioGroupItem value="custom" id="custom" />
-                        <Label htmlFor="custom" className="cursor-pointer">
-                          {t('onboarding.time.custom')}
-                        </Label>
-                        {selectedTime === 'custom' && (
-                          <Input
-                            type="time"
-                            value={customTime}
-                            onChange={(e) => setCustomTime(e.target.value)}
-                            className="w-28 ml-auto"
-                          />
-                        )}
-                      </div>
-                    </RadioGroup>
-                  </CardContent>
-                </Card>
-              )}
 
               {/* Day preview for step 1 - shows Day 0 (Welcome) + 3 days */}
               {currentStep === 1 && (

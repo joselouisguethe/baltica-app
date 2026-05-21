@@ -44,10 +44,10 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <BalticaLogo variant="header" size={56} />
+          <BalticaLogo variant="header" size={72} />
         </Link>
 
         {/* Desktop Navigation */}
@@ -92,13 +92,13 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="h-12 w-12"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           >
             {theme === 'dark' ? (
-              <Sun className="h-4 w-4" />
+              <Sun size={"2rem"} className='mx-2' />
             ) : (
-              <Moon className="h-4 w-4" />
+              <Moon size={"2rem"} className='mx-2' />
             )}
             <span className="sr-only">{t('settings.theme')}</span>
           </Button>
@@ -108,10 +108,10 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9"
+              className="h-12 w-12"
               onClick={() => navigate(-1)}
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-6 w-6" />
             </Button>
           )}
 
@@ -119,8 +119,8 @@ export function Header() {
           {isAuthenticated && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <User className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-12 w-12">
+                  <User size={"2rem"} className="h-6 w-6 mx-2" />
                   <span className="sr-only">User menu</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -130,13 +130,13 @@ export function Header() {
                   <p className="text-xs text-muted-foreground">{userEmail}</p>
                   {userRole === 'admin' && (
                     <span className="inline-flex items-center gap-1 mt-1 text-xs text-primary font-medium">
-                      <Shield className="h-3 w-3" /> Admin
+                      <Shield size={"2rem"} className="h-3 w-3 mx-2" /> Admin
                     </span>
                   )}
                 </div>
                 {userRole === 'admin' && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
-                    <Shield className="h-4 w-4 mr-2" />
+                    <Shield size={"2rem"} className="mr-2" />
                     Panel Admin
                   </DropdownMenuItem>
                 )}
@@ -156,13 +156,13 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 md:hidden"
+            className="h-12 w-12 md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
+              <X className="h-6 w-6" />
             ) : (
-              <Menu className="h-5 w-5" />
+              <Menu className="h-6 w-6" />
             )}
           </Button>
         </div>

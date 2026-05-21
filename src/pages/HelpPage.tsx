@@ -8,7 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { MessageCircle, HelpCircle, ArrowLeft } from 'lucide-react';
+import { Mail, HelpCircle, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // FAQ estructurado por secciones - RETO DE 3 DÍAS
@@ -203,7 +203,7 @@ const faqSections: Record<string, FaqSection[]> = {
       faqs: [
         {
           question: '¿Qué pasa si tengo dudas o necesito ayuda?',
-          answer: 'Puedes contactarnos directamente por electrónico info@baltica.com. Estaremos encantados de ayudarte.',
+          answer: 'Puedes contactarnos directamente por electrónico info@balticaeducation.com. Estaremos encantados de ayudarte.',
         },
       ],
     },
@@ -381,7 +381,7 @@ const faqSections: Record<string, FaqSection[]> = {
       faqs: [
         {
           question: '¿Qué pasa si tengo dudas o necesito ayuda?',
-          answer: 'Puedes contactarnos directamente por electrónico info@baltica.com. Estaremos encantados de ayudarte.',
+          answer: 'Puedes contactarnos directamente por electrónico info@balticaeducation.com. Estaremos encantados de ayudarte.',
         },
       ],
     },
@@ -558,7 +558,7 @@ const faqSections: Record<string, FaqSection[]> = {
       faqs: [
         {
           question: 'What if I have questions or need help?',
-          answer: 'You can contact us directly via Email at info@baltica.com. We will be happy to help you.',
+          answer: 'You can contact us directly via Email at info@balticaeducation.com. We will be happy to help you.',
         },
       ],
     },
@@ -668,14 +668,13 @@ export default function HelpPage() {
         {locale.startsWith('es') ? 'Volver' : 'Back'}
       </Button>
 
-      {/* Floating WhatsApp Button - bottom right */}
+      {/* Floating Email Contact Button - bottom right */}
       <a
-        href="https://wa.me/573182644725"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center shadow-lg transition-colors z-50"
+        href="mailto:info@balticaeducation.com"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-primary hover:bg-primary/90 flex items-center justify-center shadow-lg transition-colors z-50"
+        aria-label="Contact us by email"
       >
-        <MessageCircle className="h-7 w-7 text-white" />
+        <Mail className="h-7 w-7 text-primary-foreground" />
       </a>
     </div>
   );

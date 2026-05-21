@@ -30,24 +30,24 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg dark:h-32">
-        <div className="container mx-auto flex h-24 dark:h-32 items-center justify-between px-4">
-          <Link to="/" className="flex items-center mt-6 dark:mt-6">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg h-32 dark:h-36">
+        <div className="container mx-auto flex h-32 dark:h-36 items-center justify-between px-4">
+          <Link to="/" className="flex items-center mt-10 dark:mt-12">
             {/* Light mode logo */}
             <span className="dark:hidden">
-              <BalticaLogo variant="header" size={80} />
+              <BalticaLogo variant="header" size={96} />
             </span>
             {/* Dark mode logo, larger */}
             <span className="hidden dark:inline">
-              <BalticaLogo variant="header" size={112} />
+              <BalticaLogo variant="header" size={128} />
             </span>
           </Link>
 
           <div className="flex items-center gap-1">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9">
-                  <Globe className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-9 w-9 mx-2">
+                  <Globe size={"2rem"} className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -66,10 +66,10 @@ export default function LandingPage() {
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9"
+              className="h-9 w-9 mx-2"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {theme === 'dark' ? <Sun size={"2rem"} className="h-4 w-4" /> : <Moon size={"2rem"} className="h-4 w-4" />}
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/auth?mode=login')}>
               {t('auth.login.cta')}
@@ -725,7 +725,7 @@ export default function LandingPage() {
                   <span className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Mejor valor</span>
                 )}
                 <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-xl md:text-3xl font-bold text-white/80 mb-3">{plan.duration}</p>
+                <p className="text-xl md:text-2xl font-bold text-white/80 mb-3">{plan.duration}</p>
                 {plan.promo && (
                   <span className="inline-block text-xl font-bold bg-primary/30 text-primary px-3 py-1.5 rounded-full mb-3 w-fit">{plan.promo}</span>
                 )}

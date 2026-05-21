@@ -135,6 +135,11 @@
     @apply text-lg md:text-2xl font-medium;
     /* 20px mobile, 24px desktop */
   }
+
+  svg {
+    width: auto !important;
+    height: auto !important;
+  }
 }
 
 @layer utilities {

@@ -38,6 +38,7 @@ import {
   Check,
   AlertCircle,
   Loader2,
+  ArrowLeft,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
@@ -99,7 +100,19 @@ export default function SettingsPage() {
     <div className="min-h-screen bg-background">
       <Header />
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-4 py-4 max-w-2xl">
+        <div className="mb-4">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2 rounded-full px-4 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {locale.startsWith('es') ? 'Volver' : 'Back'}
+          </Button>
+        </div>
+
         <motion.h1
           className="text-2xl md:text-3xl font-bold text-foreground mb-8"
           initial={{ opacity: 0, y: -20 }}

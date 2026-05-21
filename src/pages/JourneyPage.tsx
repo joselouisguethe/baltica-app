@@ -955,13 +955,13 @@ export default function JourneyPage() {
                       </CardHeader>
                       <CardContent className="text-center">
                         <p className="text-muted-foreground mb-4">
-                          {locale.startsWith('es') ? 'Material complementario para tu práctica' : 'Complementary material for your practice'}
+                          {locale.startsWith('es') ? 'Prepara tu mente y cuerpo para comenzar a tu propio ritmo' : 'Complementary material for your practice'}
                         </p>
                         {dayContent?.pdf.url && (
                           <a href={dayContent.pdf.url} target="_blank" rel="noopener noreferrer">
                             <Button variant="outline" className="gap-2">
                               <Download className="h-4 w-4" />
-                              {locale.startsWith('es') ? 'Descargar PDF' : 'Download PDF'}
+                              {locale.startsWith('es') ? '¡Empezar con calma!' : 'Download PDF'}
                             </Button>
                           </a>
                         )}

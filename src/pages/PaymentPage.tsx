@@ -229,11 +229,11 @@ export default function PaymentPage() {
                   <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center bg-primary/10">
                     <plan.icon className="h-5 w-5 text-primary" />
                   </div>
-                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+                  <CardTitle className="text-xl">{plan.name}</CardTitle>
                   <CardDescription className="text-xs">
-                    {plan.duration}
+                    <p className="text-lg md:text-lg font-bold mb-3">{plan.duration}</p>
                     {plan.promo && (
-                      <span className="block text-primary font-semibold mt-1">{plan.promo}</span>
+                      <span className="block text-primary md:text-lg font-semibold mt-1">{plan.promo}</span>
                     )}
                   </CardDescription>
                   <div className="mt-2">
@@ -247,12 +247,18 @@ export default function PaymentPage() {
 
                 <CardContent className="pt-0 pb-4 flex-1 flex flex-col">
                   <ul className="space-y-2 flex-1 mb-4">
-                    {plan.features.map((feature, fi) => (
-                      <li key={fi} className="flex items-start gap-2 text-xs">
-                        <Check className="h-3 w-3 mt-0.5 flex-shrink-0 text-primary" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
+                    {plan.features.map((feature, fi) => {
+                      const isSpecial =
+                        (plan.id === 'intermedio' && fi >= plan.features.length - 1) ||
+                        (plan.id === 'premium' && fi >= plan.features.length - 2);
+                      return (
+                        <li key={fi}
+                          className="flex items-start gap-2 text-sm font-semibold">
+                          <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                          <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
+                        </li>
+                      )
+                    })}
                   </ul>
 
                   <Button

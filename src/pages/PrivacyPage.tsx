@@ -86,7 +86,7 @@ export default function PrivacyPage() {
                     ? 'Tienes derecho a acceder, corregir o eliminar tus datos personales. Para ejercer estos derechos, contáctanos en:'
                     : 'You have the right to access, correct, or delete your personal data. To exercise these rights, contact us at:'}
                 </p>
-                <p className="font-medium text-foreground">servicioalcliente@balticaeducation.com</p>
+                <p className="font-medium text-foreground">info@balticaeducation.com</p>
               </CardContent>
             </Card>
 

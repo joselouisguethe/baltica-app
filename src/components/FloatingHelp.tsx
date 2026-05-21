@@ -28,7 +28,7 @@ export function FloatingHelp({ className }: FloatingHelpProps) {
 
   const fullContent = (
     <div className="space-y-4">
-      <p className="text-muted-foreground leading-relaxed">
+      <p className="text-muted-foreground text-red-500 leading-relaxed">
         {t('ethical.fullText')}
       </p>
 
