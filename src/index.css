@@ -138,6 +138,7 @@
 
   svg {
     width: auto !important;
+    max-width: 2rem;
     height: auto !important;
   }
 }

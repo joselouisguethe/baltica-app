@@ -554,7 +554,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== VIDEO CORTO (placeholder — pending from client) ===== */}
-      <section className="py-12 md:py-16 bg-muted/30">
+      {/* <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.div
             className="aspect-video rounded-2xl bg-card border-2 border-dashed border-border/60 flex flex-col items-center justify-center text-muted-foreground"
@@ -574,7 +574,7 @@ export default function LandingPage() {
             />
           </motion.div>
         </div>
-      </section>
+      </section> */}
 
       {/* ===== SECTION 6: AUTORIDAD Y RESPALDO CIENTÍFICO ===== */}
       <section className="py-16 md:py-20">

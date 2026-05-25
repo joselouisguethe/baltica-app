@@ -57,8 +57,24 @@ export async function createPreference(req: Request & { user?: any }, res: Respo
 
     res.json({ init_point: result.init_point });
   } catch (err: any) {
-    console.error('CreatePreference error:', err);
-    res.status(500).json({ error: 'Error al crear preferencia de pago' });
+    // Log the full MP error so we can see which policy/field failed
+    console.error('CreatePreference error:', {
+      message: err?.message,
+      status: err?.status,
+      code: err?.code,
+      blocked_by: err?.blocked_by,
+      cause: err?.cause,
+      tokenPrefix: (process.env.MERCADOPAGO_ACCESS_TOKEN || '').slice(0, 8),
+      planType,
+      buyerEmail: userEmail,
+    });
+    const isPolicyError = err?.code === 'PA_UNAUTHORIZED_RESULT_FROM_POLICIES';
+    res.status(500).json({
+      error: isPolicyError
+        ? 'La cuenta de Mercado Pago no está autorizada para crear este pago. Verifica el access token, el país de la cuenta (debe ser CO para pesos colombianos) y que la cuenta esté activada para recibir pagos.'
+        : 'Error al crear preferencia de pago',
+      mp_code: err?.code,
+    });
   }
 }
 
