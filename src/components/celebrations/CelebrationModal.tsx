@@ -94,16 +94,28 @@ export function CelebrationModal({
 
   const getMessage = () => {
     const isSpanish = locale.startsWith('es');
-    
+
     switch (type) {
       case 'day-complete':
+        if (dayNumber === 1 || dayNumber === 0) {
+          return {
+            title: isSpanish ? 'Reto Completado' : 'Challenge Completed',
+            subtitle: isSpanish
+              ? 'Este es solo el primer gesto de un nuevo camino hacia tu bienestar.'
+              : 'This is just the first gesture of a new path toward your wellbeing.',
+          };
+        }
+        if (dayNumber === 2) {
+          return {
+            title: isSpanish ? '¡Día 2 superado!' : 'Day 2 conquered!',
+            subtitle: isSpanish
+              ? 'Estás cultivando el hábito de escucharte. Cada pausa consciente cuenta y fortalece tu bienestar.'
+              : 'You are cultivating the habit of listening to yourself. Each conscious pause counts and strengthens your wellbeing.',
+          };
+        }
         return {
-          title: isSpanish
-            ? (dayNumber === 3 ? '¡Has terminado el reto!' : '¡Día completado!')
-            : (dayNumber === 3 ? 'You finished the challenge!' : 'Day complete!'),
-          subtitle: isSpanish
-            ? (dayNumber === 3 ? '¡Completaste los 3 días. Eso es un logro real!' : `Has terminado el día ${dayNumber}.`)
-            : (dayNumber === 3 ? 'You completed all 3 days. That is a real achievement!' : `You finished day ${dayNumber}.`),
+          title: isSpanish ? '¡Viaje de 3 días completado!' : '3-day trip completed!',
+          subtitle: isSpanish ? `Has honrado tu acuerdo contigo mismo. Recuerda que este bienestar te pertenece y puedes volver a él siempre que lo necesites.` : `You have honored your agreement with yourself. Remember that this well-being belongs to you and you can return to it whenever you need to.`,
         };
       case 'streak-3':
         return {
@@ -142,10 +154,10 @@ export function CelebrationModal({
         };
       case 'journey-complete':
         return {
-          title: isSpanish ? '✨ ¡Viaje completado!' : '✨ Journey complete!',
+          title: isSpanish ? '✨ ¡Viaje de 3 días completado!' : '✨ 3-day journey complete!',
           subtitle: isSpanish
-            ? '3 días de dedicación a tu bienestar. Este es solo el comienzo.'
-            : '3 days of dedication to your wellbeing. This is just the beginning.',
+            ? 'Has honrado tu acuerdo contigo mismo. Recuerda que este bienestar te pertenece y puedes volver a él siempre que lo necesites.'
+            : 'You honored your agreement with yourself. Remember this wellbeing belongs to you and you can return to it whenever you need.',
         };
       default:
         return { title: '', subtitle: '' };
@@ -188,9 +200,17 @@ export function CelebrationModal({
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: 'spring', delay: 0.2, damping: 10 }}
-                className={`w-24 h-24 rounded-full ${config.iconBg} flex items-center justify-center mx-auto mb-6`}
+                className={`${
+                  type === 'journey-complete'
+                    ? 'w-40 h-40 ring-4 ring-primary/30 shadow-2xl shadow-primary/30'
+                    : 'w-24 h-24'
+                } rounded-full ${config.iconBg} flex items-center justify-center mx-auto mb-6`}
               >
-                <Icon className={`h-12 w-12 ${config.iconColor}`} />
+                <Icon
+                  className={`${
+                    type === 'journey-complete' ? 'h-24 w-24' : 'h-12 w-12'
+                  } ${config.iconColor}`}
+                />
               </motion.div>
 
               <motion.h2
@@ -231,8 +251,8 @@ export function CelebrationModal({
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
               >
-                <Button onClick={onClose} className="rounded-full px-8">
-                  {locale.startsWith('es') ? '¡Genial!' : 'Awesome!'}
+                <Button onClick={onClose} className="rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
+                  {locale.startsWith('es') ? 'Hecho con amor' : 'Made with love'}
                 </Button>
               </motion.div>
             </motion.div>

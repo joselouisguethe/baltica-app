@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '@/contexts/AppContext';
 import { useNotificationContext } from '@/contexts/NotificationContext';
@@ -33,12 +33,13 @@ type JourneyStep = Step;
 const DAY0_SUBSTEPS = [
   'start',
   'video-welcome',     // Día 1: Bienvenida
+  'pace-check',        // Slide "Tu ritmo es el correcto" después de Bienvenida + Introducción
   'survey-before',     // Encuesta mood/energy
   'video-intro',       // Día 1: Introducción
+  'download',          // PDFs
   'video-grounding',   // Día 1: Grounding
   'audio-grounding',   // Audio meditación grounding
   'five-senses',       // Ejercicio 5 sentidos (from Day 1)
-  'download',          // PDFs
   'closure',
 ] as const;
 type Day0SubStep = typeof DAY0_SUBSTEPS[number];
@@ -83,6 +84,8 @@ export default function JourneyPage() {
   const localeKey = locale as 'es-LATAM' | 'es-ES' | 'en';
 
   // Local form state for each day's exercises
+  // Mood/energy start blank on every mount so the user always picks fresh
+  // (no pre-selected default from previous sessions / localStorage)
   const [selectedMood, setSelectedMood] = useState<string>(
     dayNumber === 0 ? (dayAnswers.welcome?.mood || '') : (dayAnswers.day3?.mood || '')
   );
@@ -104,9 +107,57 @@ export default function JourneyPage() {
   const [nextAction, setNextAction] = useState(dayAnswers.day3?.nextAction || '');
 
   // Energy state for Day 0 and Day 3 (second measurement item per client spec)
+  // Same as mood: always blank on mount, user must pick fresh
   const [selectedEnergy, setSelectedEnergy] = useState<Energy | ''>(
     dayNumber === 0 ? (dayAnswers.welcome?.energy || '') : (dayAnswers.day3?.energy || '')
   );
+
+  // Survey sub-step (entry & exit): one question per page (mood -> energy)
+  const [surveySubStep, setSurveySubStep] = useState<'mood' | 'energy'>(
+    selectedMood && !selectedEnergy ? 'energy' : 'mood'
+  );
+
+  // Persist mood/energy IMMEDIATELY on selection so it survives reloads/back nav.
+  // Without this, the locked-after-selection rule breaks when the page remounts.
+  const handleSelectMood = (mood: string) => {
+    setSelectedMood(mood);
+    if (dayNumber === 0) {
+      saveDayAnswers({
+        welcome: {
+          ...(dayAnswers.welcome || {}),
+          mood,
+          moodBefore: mood,
+        } as any,
+      });
+    } else if (dayNumber === 3) {
+      saveDayAnswers({
+        day3: {
+          ...(dayAnswers.day3 || {}),
+          mood,
+        } as any,
+      });
+    }
+  };
+
+  const handleSelectEnergy = (energy: Energy) => {
+    setSelectedEnergy(energy);
+    if (dayNumber === 0) {
+      saveDayAnswers({
+        welcome: {
+          ...(dayAnswers.welcome || {}),
+          energy,
+          energyBefore: energy,
+        } as any,
+      });
+    } else if (dayNumber === 3) {
+      saveDayAnswers({
+        day3: {
+          ...(dayAnswers.day3 || {}),
+          energy,
+        } as any,
+      });
+    }
+  };
 
   // Video gallery state for Day 0
   const [selectedVideo, setSelectedVideo] = useState<{ url: string; title: string; duration: string } | null>(null);
@@ -209,7 +260,14 @@ export default function JourneyPage() {
   const handleComplete = () => {
     saveCurrentAnswers();
     completeDay(dayNumber);
-    sendAchievement(dayNumber);
+
+    // Day-completion milestone notification (Day 0 = Day 1 — Grounding in the merged flow)
+    if (dayNumber === 0 || dayNumber === 1) sendAchievement('day-1');
+    else if (dayNumber === 2) sendAchievement('day-2');
+    else if (dayNumber === 3) {
+      sendAchievement('day-3');
+      sendAchievement('reto-complete');
+    }
 
     const today = new Date().toISOString().split('T')[0];
     let newStreak = progress.streak;
@@ -245,6 +303,12 @@ export default function JourneyPage() {
     return '';
   };
 
+  const getDescription = (): string => {
+    if (dayNumber == 2) return 'Relaja la mente mientras le das a tu cuerpo el descanso que necesita hoy.';
+    if (dayNumber == 3) return 'Concluye este viaje con una guía diseñada para llevar la calma contigo a todas partes.';
+    return 'Un espacio breve para soltar la prisa y conectar con tu respiración.'
+  }
+
   const getDayLabel = (): string => {
     return `${t('journey.day')} ${displayDay}`;
   };
@@ -260,44 +324,97 @@ export default function JourneyPage() {
     }
   };
 
-  const renderWelcomeSurvey = () => (
-    <div className="py-4 space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-2 text-center">
-          {t('day.0.checkin')}
-        </h2>
-        <p className="text-muted-foreground text-center mb-4">
-          {locale.startsWith('es')
-            ? 'Tu respuesta es solo para ti. No hay respuestas correctas o incorrectas.'
-            : 'Your answer is just for you. There are no right or wrong answers.'}
-        </p>
-        <MoodSelector onSelect={setSelectedMood as any} selectedMood={selectedMood as any} />
-      </div>
+  const renderWelcomeSurvey = () => {
+    const es = locale.startsWith('es');
+    return (
+      <div className="py-4 space-y-6">
+        {surveySubStep === 'mood' ? (
+          <div>
+            <h2 className="text-xl font-semibold text-foreground mb-2 text-center">
+              {t('day.0.checkin')}
+            </h2>
+            <p className="text-muted-foreground text-center mb-6">
+              {es
+                ? 'Tu respuesta es solo para ti. No hay respuestas correctas o incorrectas.'
+                : 'Your answer is just for you. There are no right or wrong answers.'}
+            </p>
+            <MoodSelector onSelect={handleSelectMood as any} selectedMood={selectedMood as any} />
 
-      <div>
-        <h3 className="text-lg font-medium text-foreground mb-3 text-center">
-          {t('energy.title' as any)}
-        </h3>
-        <EnergySelector onSelect={setSelectedEnergy} selectedEnergy={selectedEnergy} />
-      </div>
+            {selectedMood && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={() => setSurveySubStep('energy')}
+                  className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+                >
+                  {es ? 'Siguiente' : 'Next'}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>
+            <h2 className="text-xl font-semibold text-foreground mb-2 text-center">
+              {t('energy.title' as any)}
+            </h2>
+            <p className="text-muted-foreground text-center mb-6">
+              {es
+                ? 'Tu respuesta es solo para ti. No hay respuestas correctas o incorrectas.'
+                : 'Your answer is just for you. There are no right or wrong answers.'}
+            </p>
+            <EnergySelector onSelect={handleSelectEnergy} selectedEnergy={selectedEnergy} />
 
-      <div className="flex justify-center mt-6">
-        <Button onClick={nextStep} disabled={!canProceedFromSurvey()} className="gap-2 rounded-full px-8">
-          {t('welcome.block0.ready')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
+            {selectedEnergy && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={nextStep}
+                  className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+                >
+                  {t('welcome.block0.ready')}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderDay1Survey = () => (
-    <div className="py-4">
+    <div className="py-2">
+      {/* PDF reading notice - standardized across all 3 days */}
+      <div className="flex items-start gap-3 p-3 mb-3 rounded-xl bg-[#10B0C0]/10 dark:bg-[#10B0C0]/15 border border-[#10B0C0]/30 dark:border-[#10B0C0]/40">
+        <Download className="h-5 w-5 text-[#10B0C0] mt-0.5 shrink-0" />
+        <div className="text-sm">
+          <p className="font-semibold text-[#0a7a85] dark:text-[#7dd3df] mb-1">
+            {locale.startsWith('es') ? 'Antes de continuar, lee el PDF del Día 1' : 'Before continuing, read the Day 1 PDF'}
+          </p>
+          <p className="text-[#0a7a85]/85 dark:text-[#7dd3df]/85 mb-2">
+            {locale.startsWith('es')
+              ? 'Primero leer el PDF, para continuar.'
+              : 'Read the PDF first, then continue.'}
+          </p>
+          {dayContents[1]?.pdf.url && (
+            <a
+              href={dayContents[1].pdf.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 font-medium text-[#0a7a85] dark:text-[#7dd3df] underline underline-offset-2 hover:opacity-80"
+            >
+              <Download className="h-3.5 w-3.5" />
+              {locale.startsWith('es') ? 'Descargar PDF Día 1' : 'Download Day 1 PDF'}
+            </a>
+          )}
+        </div>
+      </div>
+
       <Card className="shadow-card">
-        <CardHeader>
+        <CardHeader className="pb-2">
           <CardTitle className="text-lg">{t('day.1.words.title')}</CardTitle>
           <p className="text-sm text-muted-foreground">{t('day.1.words.instruction')}</p>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2">
           {[0, 1, 2].map(i => (
             <Input
               key={i}
@@ -314,11 +431,11 @@ export default function JourneyPage() {
             />
           ))}
 
-          <div className="border-t border-border/40 pt-4 mt-4">
-            <p className="text-lg font-semibold text-foreground mb-3">{t('day.1.timeslot')}</p>
+          <div className="border-t border-border/40 pt-3 mt-3">
+            <p className="text-base font-semibold text-foreground mb-2">{t('day.1.timeslot')}</p>
             <RadioGroup value={selectedTimeSlot} onValueChange={setSelectedTimeSlot}>
               {timeSlotOptions[localeKey].map(option => (
-                <div key={option.value} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-muted/50">
+                <div key={option.value} className="flex items-center space-x-3 p-1.5 rounded-lg hover:bg-muted/50">
                   <RadioGroupItem value={option.value} id={`time-${option.value}`} />
                   <Label htmlFor={`time-${option.value}`} className="cursor-pointer flex-1">
                     {option.label}
@@ -330,8 +447,12 @@ export default function JourneyPage() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-center mt-4">
-        <Button onClick={nextStep} disabled={!canProceedFromSurvey()} className="gap-2 rounded-full px-8">
+      <div className="flex justify-center mt-3">
+        <Button
+          onClick={nextStep}
+          disabled={!canProceedFromSurvey()}
+          className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+        >
           {t('survey.submit')}
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -340,15 +461,15 @@ export default function JourneyPage() {
   );
 
   const renderDay2Survey = () => (
-    <div className="py-4">
-      {/* PDF reading notice */}
-      <div className="flex items-start gap-3 p-4 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-        <Download className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+    <div className="py-2">
+      {/* PDF reading notice - standardized */}
+      <div className="flex items-start gap-3 p-3 mb-3 rounded-xl bg-[#10B0C0]/10 dark:bg-[#10B0C0]/15 border border-[#10B0C0]/30 dark:border-[#10B0C0]/40">
+        <Download className="h-5 w-5 text-[#10B0C0] mt-0.5 shrink-0" />
         <div className="text-sm">
-          <p className="font-semibold text-amber-800 dark:text-amber-300 mb-1">
+          <p className="font-semibold text-[#0a7a85] dark:text-[#7dd3df] mb-1">
             {locale.startsWith('es') ? 'Antes de continuar, lee el PDF del Día 2' : 'Before continuing, read the Day 2 PDF'}
           </p>
-          <p className="text-amber-700 dark:text-amber-400 mb-2">
+          <p className="text-[#0a7a85]/85 dark:text-[#7dd3df]/85 mb-2">
             {locale.startsWith('es')
               ? 'Primero leer el PDF, para continuar.'
               : 'Read the PDF first, then continue.'}
@@ -358,7 +479,7 @@ export default function JourneyPage() {
               href={dayContents[2].pdf.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:opacity-80"
+              className="inline-flex items-center gap-1.5 font-medium text-[#0a7a85] dark:text-[#7dd3df] underline underline-offset-2 hover:opacity-80"
             >
               <Download className="h-3.5 w-3.5" />
               {locale.startsWith('es') ? 'Descargar PDF Día 2' : 'Download Day 2 PDF'}
@@ -428,8 +549,12 @@ export default function JourneyPage() {
         </CardContent>
       </Card>
 
-      <div className="flex justify-center mt-4">
-        <Button onClick={nextStep} disabled={!canProceedFromSurvey()} className="gap-2 rounded-full px-8">
+      <div className="flex justify-center mt-3">
+        <Button
+          onClick={nextStep}
+          disabled={!canProceedFromSurvey()}
+          className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+        >
           {t('survey.submit')}
           <ArrowRight className="h-4 w-4" />
         </Button>
@@ -438,81 +563,106 @@ export default function JourneyPage() {
   );
 
   const renderDay3Survey = () => (
-    <div className="py-4">
-      <div className="flex items-start gap-3 p-4 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-        <Download className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+    <div className="py-2">
+      <div className="flex items-start gap-3 p-3 mb-3 rounded-xl bg-[#10B0C0]/10 dark:bg-[#10B0C0]/15 border border-[#10B0C0]/30 dark:border-[#10B0C0]/40">
+        <Download className="h-5 w-5 text-[#10B0C0] mt-0.5 shrink-0" />
         <div className="text-sm">
-          <p className="font-semibold text-amber-800 dark:text-amber-300 mb-1">
+          <p className="font-semibold text-[#0a7a85] dark:text-[#7dd3df] mb-1">
             {locale.startsWith('es') ? 'Antes de continuar, lee el PDF del Día 3' : 'Before continuing, read the Day 3 PDF'}
           </p>
-          <p className="text-amber-700 dark:text-amber-400 mb-2">
+          <p className="text-[#0a7a85]/85 dark:text-[#7dd3df]/85 mb-2">
             {locale.startsWith('es') ? 'Primero leer el PDF, para continuar.' : 'Read the PDF first, then continue.'}
           </p>
           {dayContents[3]?.pdf.url && (
-            <a href={dayContents[3].pdf.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:opacity-80">
+            <a href={dayContents[3].pdf.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-[#0a7a85] dark:text-[#7dd3df] underline underline-offset-2 hover:opacity-80">
               <Download className="h-3.5 w-3.5" />
               {locale.startsWith('es') ? 'Descargar PDF Día 3' : 'Download Day 3 PDF'}
             </a>
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-[5fr,3fr] gap-4">
-        {/* Left column (full width on mobile): exercises */}
-        <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-lg">{t('day.3.gratitude.title')}</CardTitle>
-            <p className="text-sm text-muted-foreground">{t('day.3.gratitude.instruction')}</p>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              {[0, 1, 2].map(i => (
-                <Input
-                  key={i}
-                  placeholder={locale.startsWith('es')
-                    ? `${['1ra', '2da', '3ra'][i]} gratitud`
-                    : `${['1st', '2nd', '3rd'][i]} gratitude`}
-                  value={gratitudes[i]}
-                  onChange={e => {
-                    const g = [...gratitudes] as [string, string, string];
-                    g[i] = e.target.value;
-                    setGratitudes(g);
-                  }}
-                  className="text-center"
-                />
-              ))}
-            </div>
+      {surveySubStep === 'mood' ? (
+        <>
+          <Card className="shadow-card mb-4">
+            <CardHeader>
+              <CardTitle className="text-lg">{t('day.3.gratitude.title')}</CardTitle>
+              <p className="text-sm text-muted-foreground">{t('day.3.gratitude.instruction')}</p>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                {[0, 1, 2].map(i => (
+                  <Input
+                    key={i}
+                    placeholder={locale.startsWith('es')
+                      ? `${['1ra', '2da', '3ra'][i]} gratitud`
+                      : `${['1st', '2nd', '3rd'][i]} gratitude`}
+                    value={gratitudes[i]}
+                    onChange={e => {
+                      const g = [...gratitudes] as [string, string, string];
+                      g[i] = e.target.value;
+                      setGratitudes(g);
+                    }}
+                    className="text-center"
+                  />
+                ))}
+              </div>
 
-            <div>
-              <Label className="text-sm font-medium mb-1 block">{t('day.3.phrase.title')}</Label>
-              <Textarea placeholder={t('day.3.phrase.placeholder')} value={kindPhrase} onChange={e => setKindPhrase(e.target.value)} rows={2} />
-            </div>
+              <div>
+                <Label className="text-sm font-medium mb-1 block">{t('day.3.phrase.title')}</Label>
+                <Textarea placeholder={t('day.3.phrase.placeholder')} value={kindPhrase} onChange={e => setKindPhrase(e.target.value)} rows={2} />
+              </div>
 
-            <div>
-              <Label className="text-sm font-medium mb-1 block">{t('day.3.next.title')}</Label>
-              <Textarea placeholder={t('day.3.next.placeholder')} value={nextAction} onChange={e => setNextAction(e.target.value)} rows={2} />
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <Label className="text-sm font-medium mb-1 block">{t('day.3.next.title')}</Label>
+                <Textarea placeholder={t('day.3.next.placeholder')} value={nextAction} onChange={e => setNextAction(e.target.value)} rows={2} />
+              </div>
+            </CardContent>
+          </Card>
 
-        {/* Right column: Mood + Energy stacked */}
-        <div className="flex flex-col items-center justify-center gap-4">
-          <div className="text-center">
-            <h2 className="text-sm font-semibold text-foreground mb-2">{t('survey.title')}</h2>
-            <MoodSelector onSelect={setSelectedMood as any} selectedMood={selectedMood as any} showResponse={false} />
+          <div className="text-center my-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('survey.title')}</h2>
+            <p className="text-muted-foreground mb-6">
+              {locale.startsWith('es')
+                ? 'Tu respuesta es solo para ti. No hay respuestas correctas o incorrectas.'
+                : 'Your answer is just for you. There are no right or wrong answers.'}
+            </p>
+            <MoodSelector onSelect={handleSelectMood as any} selectedMood={selectedMood as any} />
           </div>
-          <div className="text-center">
-            <h3 className="text-sm font-semibold text-foreground mb-2">{t('energy.title' as any)}</h3>
-            <EnergySelector onSelect={setSelectedEnergy} selectedEnergy={selectedEnergy} showResponse={false} />
-          </div>
-        </div>
-      </div>
 
-      <div className="flex justify-center mt-4">
-        <Button onClick={nextStep} disabled={!canProceedFromSurvey()} className="gap-2 rounded-full px-8">
-          {t('survey.submit')}
-          <ArrowRight className="h-4 w-4" />
-        </Button>
-      </div>
+          {selectedMood && gratitudes.every(g => g.trim()) && kindPhrase.trim() && nextAction.trim() && (
+            <div className="flex justify-center mt-6">
+              <Button
+                onClick={() => setSurveySubStep('energy')}
+                className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+              >
+                {locale.startsWith('es') ? 'Siguiente' : 'Next'}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div className="text-center my-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">{t('energy.title' as any)}</h2>
+            <p className="text-muted-foreground mb-6">
+              {locale.startsWith('es')
+                ? 'Tu respuesta es solo para ti. No hay respuestas correctas o incorrectas.'
+                : 'Your answer is just for you. There are no right or wrong answers.'}
+            </p>
+            <EnergySelector onSelect={handleSelectEnergy} selectedEnergy={selectedEnergy} />
+          </div>
+
+          {selectedEnergy && (
+            <div className="flex justify-center mt-6">
+              <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
+                {t('survey.submit')}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 
@@ -521,31 +671,45 @@ export default function JourneyPage() {
     switch (dayNumber) {
       case 0:
         return isSpanish
-          ? '¡Completaste el Día 1! Hoy diste tu primer paso. Nos vemos mañana para el Día 2.'
-          : 'You completed Day 1! Today you took your first step. See you tomorrow for Day 2.';
+          ? 'Hoy diste un paso importante. No hace falta que sea perfecto, basta con estar presente.'
+          : 'Today you took an important step. It doesn\'t have to be perfect—all that matters is that you\'re here.';
       case 2:
         return isSpanish
-          ? 'Actuar desde tus valores te conecta contigo. Nos vemos mañana para cerrar este viaje.'
+          ? 'Regalarte estos minutos hoy es el mejor gesto de autocuidado que podías hacer. Mañana cerramos este ciclo juntos.'
           : 'Acting from your values connects you with yourself. See you tomorrow to close this journey.';
       case 3:
         return isSpanish
-          ? '¡Has terminado el reto! Completaste los 3 días. Recuerda: este programa es educativo. Si necesitas apoyo profesional, no dudes en buscarlo.'
+          ? 'Completaste los 3 días de dedicación a tu bienestar. Has integrado una nueva pausa en tu rutina con éxito.'
           : 'You finished the challenge! You completed all 3 days. Remember: this program is educational. If you need professional support, do not hesitate to seek it.';
       default:
         return '';
     }
   };
 
-  const getNextDayPreview = (): string | null => {
+  const getNextDayPreview = (): ReactNode => {
     if (dayNumber >= 3) return null;
     // Day 0 → next visible day is 2 (displayed as "Día 2")
-    if (dayNumber === 0) return `${t('closure.nextDay.prefix' as any)}${t('closure.nextDay.day2' as any)}`;
+    if (dayNumber === 0) {
+      return (
+        <>
+          {t('closure.nextDay.prefix' as any)}
+          <strong>{t('closure.nextDay.day2' as any)}</strong>
+          - actuando desde tus valores
+        </>
+      );
+    }
     const nextDay = dayNumber + 1;
-    return `${t('closure.nextDay.prefix' as any)}${t(`closure.nextDay.day${nextDay}` as any)}`;
+    return (
+      <>
+        {t('closure.nextDay.prefix' as any)}
+        <strong>{t(`closure.nextDay.day${nextDay}` as any)}</strong>
+      </>
+    );
   };
 
   const getClosureTitle = (): string => {
-    if (dayNumber === 3) return t('day.complete.title');
+    if (dayNumber === 2) return '¡SIGUES ADELANTE!';
+    if (dayNumber === 3) return '¡META ALCANZADA!';
     return t('closure.title');
   };
 
@@ -616,7 +780,7 @@ export default function JourneyPage() {
                     </motion.div>
                     <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4">{getDayTitle()}</h1>
                     <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">{getDaySubtitle()}</p>
-                    <Button size="lg" onClick={nextStep} className="gap-2 rounded-full px-8">
+                    <Button size="lg" onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                       {t('journey.start')}
                       <ArrowRight className="h-5 w-5" />
                     </Button>
@@ -636,11 +800,76 @@ export default function JourneyPage() {
                       <VideoPlayer src={day0ExtendedContent.welcomeVideo.url} title={day0ExtendedContent.welcomeVideo.title || ''} duration={day0ExtendedContent.welcomeVideo.duration} />
                     </div>
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={() => { sendAchievement('welcome'); nextStep(); }} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('video.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
                     </div>
+                  </div>
+                )}
+
+                {/* Tu ritmo es el correcto — slide tras Bienvenida + Introducción */}
+                {DAY0_SUBSTEPS[day0Step] === 'pace-check' && (
+                  <div className="py-4 max-w-2xl mx-auto">
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="text-center"
+                    >
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                        {locale.startsWith('es') ? 'Tu ritmo es el correcto ✨' : 'Your pace is the right one ✨'}
+                      </h2>
+                      <p className="text-base md:text-lg text-foreground mb-5 leading-relaxed">
+                        {locale.startsWith('es')
+                          ? 'Has completado la bienvenida y la introducción, ahora estás listo para empezar. Pero recuerda: este reto es para tu bienestar, no una obligación.'
+                          : 'You completed the welcome and the introduction, now you are ready to begin. But remember: this challenge is for your wellbeing, not an obligation.'}
+                      </p>
+
+                      <div className="text-left space-y-3 mb-5 bg-card border border-border rounded-xl p-4">
+                        <p className="text-base">
+                          <span className="font-semibold text-[#10B0C0]">
+                            {locale.startsWith('es') ? 'Si te sientes con energía: ' : 'If you feel energetic: '}
+                          </span>
+                          {locale.startsWith('es')
+                            ? 'Puedes dar el primer paso y comenzar el Día 1 ahora mismo.'
+                            : 'You can take the first step and start Day 1 right now.'}
+                        </p>
+                        <p className="text-base">
+                          <span className="font-semibold text-[#10B0C0]">
+                            {locale.startsWith('es') ? 'Si para ti es suficiente por hoy: ' : 'If today is enough for you: '}
+                          </span>
+                          {locale.startsWith('es')
+                            ? 'No hay ningún problema. Hacer una pausa también es un gesto de autocuidado.'
+                            : 'No problem at all. Taking a pause is also an act of self-care.'}
+                        </p>
+                      </div>
+
+                      <p className="text-sm md:text-base text-muted-foreground mb-6 italic">
+                        {locale.startsWith('es')
+                          ? 'Mañana nos vemos para comenzar oficialmente con el primer día del reto. Estar aquí ya cuenta mucho.'
+                          : "Tomorrow we'll meet to officially start the first day of the challenge. Being here already counts a lot."}
+                      </p>
+
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button
+                          onClick={() => { saveCurrentAnswers(); navigate('/'); }}
+                          size="lg"
+                          variant="outline"
+                          className="gap-2 rounded-full px-6 border-[#10B0C0] text-[#10B0C0] hover:bg-[#10B0C0]/10"
+                        >
+                          {locale.startsWith('es') ? 'Parar y Volver mañana' : 'Pause and return tomorrow'}
+                        </Button>
+                        <Button
+                          onClick={nextStep}
+                          size="lg"
+                          className="gap-2 rounded-full px-6 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+                        >
+                          {locale.startsWith('es') ? 'Para empezar el día 1' : 'Start Day 1 now'}
+                          <ArrowRight className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </motion.div>
                   </div>
                 )}
 
@@ -660,7 +889,7 @@ export default function JourneyPage() {
                       <VideoPlayer src={day0ExtendedContent.introVideo.url} title={day0ExtendedContent.introVideo.title || ''} duration={day0ExtendedContent.introVideo.duration} />
                     </div>
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={() => { sendAchievement('intro'); nextStep(); }} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('video.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -681,7 +910,7 @@ export default function JourneyPage() {
                       <VideoPlayer src={day1Content.video.url} title={day1Content.video.title || ''} duration={day1Content.video.duration} />
                     </div>
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('video.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -692,11 +921,11 @@ export default function JourneyPage() {
                 {/* Audio grounding */}
                 {DAY0_SUBSTEPS[day0Step] === 'audio-grounding' && (
                   <div className="py-2">
-                    <h2 className="text-lg font-semibold text-foreground mb-1 text-center">{t('content.audio')}</h2>
+                    <h2 className="text-lg font-semibold text-foreground mb-1 text-center">Tu pausa diaria</h2>
                     <p className="text-muted-foreground text-center mb-2 text-sm">{day1Content.audio.title}</p>
                     <AudioPlayer title={day1Content.audio.title || ''} subtitle={t('audio.title')} duration={day1Content.audio.duration || '5:00'} audioSrc={day1Content.audio.url} />
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('audio.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -708,17 +937,17 @@ export default function JourneyPage() {
                 {DAY0_SUBSTEPS[day0Step] === 'five-senses' && (
                   <div className="py-4">
                     {/* PDF reading notice */}
-                    <div className="flex items-start gap-3 p-4 mb-4 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                      <Download className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                    <div className="flex items-start gap-3 p-4 mb-4 rounded-xl bg-[#10B0C0]/10 dark:bg-[#10B0C0]/15 border border-[#10B0C0]/30 dark:border-[#10B0C0]/40">
+                      <Download className="h-5 w-5 text-[#10B0C0] mt-0.5 shrink-0" />
                       <div className="text-sm">
-                        <p className="font-semibold text-amber-800 dark:text-amber-300 mb-1">
+                        <p className="font-semibold text-[#0a7a85] dark:text-[#7dd3df] mb-1">
                           {locale.startsWith('es') ? 'Antes de continuar, lee el PDF del Día 1' : 'Before continuing, read the Day 1 PDF'}
                         </p>
-                        <p className="text-amber-700 dark:text-amber-400 mb-2">
+                        <p className="text-[#0a7a85]/85 dark:text-[#7dd3df]/85 mb-2">
                           {locale.startsWith('es') ? 'Primero leer el PDF, para continuar.' : 'Read the PDF first, then continue.'}
                         </p>
                         {day1Content.pdf.url && (
-                          <a href={day1Content.pdf.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-amber-800 dark:text-amber-300 underline underline-offset-2 hover:opacity-80">
+                          <a href={day1Content.pdf.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 font-medium text-[#0a7a85] dark:text-[#7dd3df] underline underline-offset-2 hover:opacity-80">
                             <Download className="h-3.5 w-3.5" />
                             {locale.startsWith('es') ? 'Descargar PDF Día 1' : 'Download Day 1 PDF'}
                           </a>
@@ -760,7 +989,7 @@ export default function JourneyPage() {
                       </CardContent>
                     </Card>
                     <div className="flex justify-center mt-4">
-                      <Button onClick={nextStep} disabled={!words.every(w => w.trim()) || !selectedTimeSlot} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} disabled={!words.every(w => w.trim()) || !selectedTimeSlot} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('survey.submit')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -830,7 +1059,7 @@ export default function JourneyPage() {
                       )}
                     </div>
                     <div className="flex justify-center mt-6">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('common.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -853,13 +1082,13 @@ export default function JourneyPage() {
                     <h1 className="text-2xl font-bold text-foreground mb-3">{getClosureTitle()}</h1>
 
                     <Card className="shadow-card mb-4 text-left">
-                      <CardHeader className="pb-2">
+                      {/* <CardHeader className="pb-2">
                         <div className="flex items-center gap-2">
                           <BalticaLogo variant="isotipo" size={28} />
                           <CardTitle className="text-base">{t('closure.practice.title')}</CardTitle>
                         </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
+                      </CardHeader> */}
+                      <CardContent className="pt-4">
                         <p className="text-sm text-foreground mb-2">{getClosureMessage()}</p>
                         {dayContent && (
                           <p className="text-xs text-muted-foreground">{dayContent.practice[localeKey]}</p>
@@ -873,7 +1102,7 @@ export default function JourneyPage() {
                     </Card>
 
                     <div className="flex justify-center">
-                      <Button onClick={handleComplete} size="lg" className="gap-2 rounded-full px-8">
+                      <Button onClick={handleComplete} size="lg" className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('closure.next')}
                         <ArrowRight className="h-5 w-5" />
                       </Button>
@@ -906,7 +1135,7 @@ export default function JourneyPage() {
                     </motion.div>
                     <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4">{getDayTitle()}</h1>
                     <p className="text-lg text-muted-foreground mb-8 max-w-md mx-auto">{getDaySubtitle()}</p>
-                    <Button size="lg" onClick={nextStep} className="gap-2 rounded-full px-8">
+                    <Button size="lg" onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                       {t('journey.start')}
                       <ArrowRight className="h-5 w-5" />
                     </Button>
@@ -921,7 +1150,7 @@ export default function JourneyPage() {
                       <VideoPlayer src={dayContent?.video.url} title={dayContent?.video.title || ''} duration={dayContent?.video.duration || '1:30'} onComplete={() => markStepComplete('video')} />
                     </div>
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('video.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -931,11 +1160,11 @@ export default function JourneyPage() {
 
                 {currentStep === 'audio' && (
                   <div className="py-2">
-                    <h2 className="text-lg font-semibold text-foreground mb-1 text-center">{t('content.audio')}</h2>
+                    <h2 className="text-lg font-semibold text-foreground mb-1 text-center">{(dayNumber === 2) ? 'Momento de calma' : (dayNumber === 3) ? 'Espacio de bienestar' : 'Tu pausa diaria'}</h2>
                     <p className="text-muted-foreground text-center mb-2 text-sm">{dayContent?.audio.title || t('audio.title')}</p>
-                    <AudioPlayer title={dayContent?.audio.title || ''} subtitle={t('audio.title')} duration={dayContent?.audio.duration || '5:00'} audioSrc={dayContent?.audio.url} onComplete={() => markStepComplete('audio')} />
+                    <AudioPlayer title={dayContent?.audio.title || ''} subtitle={getDescription()} duration={dayContent?.audio.duration || '5:00'} audioSrc={dayContent?.audio.url} onComplete={() => markStepComplete('audio')} />
                     <div className="flex justify-center mt-3">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('audio.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -955,20 +1184,20 @@ export default function JourneyPage() {
                       </CardHeader>
                       <CardContent className="text-center">
                         <p className="text-muted-foreground mb-4">
-                          {locale.startsWith('es') ? 'Prepara tu mente y cuerpo para comenzar a tu propio ritmo' : 'Complementary material for your practice'}
+                          {locale.startsWith('es') ? 'Pasa a la acción y aplica paso a paso lo que aprendiste hoy.' : 'Complementary material for your practice'}
                         </p>
                         {dayContent?.pdf.url && (
                           <a href={dayContent.pdf.url} target="_blank" rel="noopener noreferrer">
                             <Button variant="outline" className="gap-2">
                               <Download className="h-4 w-4" />
-                              {locale.startsWith('es') ? '¡Empezar con calma!' : 'Download PDF'}
+                              {/* {locale.startsWith('es') ? 'Descargar PDF' : 'Download PDF'} */}
                             </Button>
                           </a>
                         )}
                       </CardContent>
                     </Card>
                     <div className="flex justify-center mt-6">
-                      <Button onClick={nextStep} className="gap-2 rounded-full px-8">
+                      <Button onClick={nextStep} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {t('common.next')}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -991,22 +1220,8 @@ export default function JourneyPage() {
 
                     <h1 className="text-2xl font-bold text-foreground mb-3">{getClosureTitle()}</h1>
 
-                    {dayNumber === 3 && (
-                      <p className="text-muted-foreground mb-3">{t('day.complete.subtitle')}</p>
-                    )}
-
                     <Card className="shadow-card mb-4 text-left">
-                      <CardHeader className="pb-2">
-                        <div className="flex items-center gap-2">
-                          <BalticaLogo variant="isotipo" size={28} />
-                          <CardTitle className="text-base">
-                            {dayNumber === 3
-                              ? (locale.startsWith('es') ? 'Mensaje final' : 'Final message')
-                              : t('closure.practice.title')}
-                          </CardTitle>
-                        </div>
-                      </CardHeader>
-                      <CardContent className="pt-0">
+                      <CardContent className="pt-4">
                         <p className="text-sm text-foreground mb-2">{getClosureMessage()}</p>
                         {dayContent && (
                           <p className="text-xs text-muted-foreground">{dayContent.practice[localeKey]}</p>
@@ -1052,9 +1267,9 @@ export default function JourneyPage() {
                     )}
 
                     <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                      <Button onClick={() => { handleComplete(); if (dayNumber === 3) navigate('/survey'); }} size="lg" className="gap-2 rounded-full px-8">
+                      <Button onClick={handleComplete} size="lg" className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
                         {dayNumber === 3
-                          ? (locale.startsWith('es') ? 'Completar encuesta de satisfacción' : 'Complete satisfaction survey')
+                          ? (locale.startsWith('es') ? 'Finalizar reto' : 'Finish challenge')
                           : t('closure.next')}
                         <ArrowRight className="h-5 w-5" />
                       </Button>

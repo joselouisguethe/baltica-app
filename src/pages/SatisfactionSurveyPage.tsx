@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { CheckCircle, ArrowRight, ClipboardCheck } from 'lucide-react';
+import { CheckCircle, ArrowRight, ClipboardCheck, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { api } from '@/lib/api';
@@ -111,7 +111,7 @@ export default function SatisfactionSurveyPage() {
           <p className="text-muted-foreground mb-6">
             {es ? 'Ya completaste la encuesta de satisfacción. ¡Gracias!' : 'You already completed the satisfaction survey. Thank you!'}
           </p>
-          <Button onClick={() => navigate('/')} className="gap-2 rounded-full px-8">
+          <Button onClick={() => navigate('/')} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
             {es ? 'Ir al inicio' : 'Go to home'}
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -138,7 +138,7 @@ export default function SatisfactionSurveyPage() {
           <p className="text-muted-foreground mb-6">
             {es ? 'Tu encuesta ha sido registrada. Ahora puedes acceder a tu diploma y materiales adicionales.' : 'Your survey has been recorded. You can now access your diploma and additional materials.'}
           </p>
-          <Button onClick={() => navigate('/diploma')} className="gap-2 rounded-full px-8">
+          <Button onClick={() => navigate('/diploma')} className="gap-2 rounded-full px-8 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white">
             {es ? 'Ver mi diploma' : 'View my diploma'}
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -150,14 +150,29 @@ export default function SatisfactionSurveyPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-4 py-4 max-w-2xl pb-[5rem]">
+        <div className="flex items-center justify-between mb-4">
+          <Button
+            variant="default"
+            size="sm"
+            onClick={() => navigate(-1)}
+            className="gap-2 rounded-full px-4 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {es ? 'Volver' : 'Back'}
+          </Button>
+          <span className="text-sm font-medium text-muted-foreground">
+            {es ? 'Día 3' : 'Day 3'}
+          </span>
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <div className="text-center mb-6">
-            <ClipboardCheck className="h-10 w-10 text-primary mx-auto mb-3" />
+          <div className="text-center mb-4">
+            <ClipboardCheck className="h-10 w-10 text-primary mx-auto mb-2" />
             <h1 className="text-2xl font-bold text-foreground mb-2">
               {es ? 'Encuesta de Satisfacción' : 'Satisfaction Survey'}
             </h1>
@@ -291,7 +306,7 @@ export default function SatisfactionSurveyPage() {
               onClick={handleSubmit}
               disabled={!isValid || submitting}
               size="lg"
-              className="gap-2 rounded-full px-10"
+              className="gap-2 rounded-full px-10 bg-[#10B0C0] hover:bg-[#0e9aaa] text-white"
             >
               {submitting
                 ? (es ? 'Enviando...' : 'Submitting...')

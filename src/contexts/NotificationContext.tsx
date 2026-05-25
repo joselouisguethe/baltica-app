@@ -17,8 +17,16 @@ interface NotificationContextType {
   sendStreakReminder: () => void;
   sendDailyReminder: () => void;
   sendEncouragement: () => void;
-  sendAchievement: (day: number) => void;
+  sendAchievement: (milestone: AchievementMilestone) => void;
 }
+
+export type AchievementMilestone =
+  | 'welcome'
+  | 'intro'
+  | 'day-1'
+  | 'day-2'
+  | 'day-3'
+  | 'reto-complete';
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
@@ -65,11 +73,59 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
             'Your consistency is building great changes.',
             'Remember: progress, not perfection.',
           ],
-      achievementTitle: isSpanish ? '🏆 ¡Día completado!' : '🏆 Day completed!',
-      achievementMessage: (day: number) =>
-        isSpanish
-          ? `Has completado el día ${day}. ¡Excelente trabajo!`
-          : `You completed day ${day}. Excellent work!`,
+      milestones: isSpanish
+        ? {
+            'welcome': {
+              title: '🌟 Bienvenida completada',
+              message: 'Tu espacio de bienestar ya está listo. Gracias por regalarte este momento.',
+            },
+            'intro': {
+              title: '🧡 Introducción completada',
+              message: 'Ya diste el primer paso. A veces, comenzar es lo más importante.',
+            },
+            'day-1': {
+              title: '🧘 Día 1 completado — Atención y calma',
+              message: 'Hoy te detuviste para respirar y reconectar contigo.',
+            },
+            'day-2': {
+              title: '🌱 Día 2 completado — Acción con propósito',
+              message: 'Cada pequeño paso cuenta. Hoy elegiste avanzar con intención.',
+            },
+            'day-3': {
+              title: '🤩 Día 3 completado — Autocompasión y cierre',
+              message: 'Terminaste este reto con amabilidad hacia ti. Gracias por llegar hasta aquí.',
+            },
+            'reto-complete': {
+              title: '🏆 ¡Reto completado!',
+              message: 'Tres días, un mismo propósito: cuidarte. Esto puede ser el comienzo de algo muy valioso.',
+            },
+          }
+        : {
+            'welcome': {
+              title: '🌟 Welcome completed',
+              message: 'Your wellbeing space is ready. Thank you for giving yourself this moment.',
+            },
+            'intro': {
+              title: '🧡 Introduction completed',
+              message: 'You already took the first step. Sometimes, starting is the most important thing.',
+            },
+            'day-1': {
+              title: '🧘 Day 1 completed — Attention and calm',
+              message: 'Today you paused to breathe and reconnect with yourself.',
+            },
+            'day-2': {
+              title: '🌱 Day 2 completed — Purposeful action',
+              message: 'Every small step counts. Today you chose to move forward with intention.',
+            },
+            'day-3': {
+              title: '🤩 Day 3 completed — Self-compassion and closing',
+              message: 'You finished this challenge with kindness toward yourself. Thank you for making it here.',
+            },
+            'reto-complete': {
+              title: '🏆 Challenge completed!',
+              message: 'Three days, one shared purpose: caring for yourself. This could be the start of something very valuable.',
+            },
+          } as const,
     };
   };
 
@@ -96,10 +152,12 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const sendAchievement = (day: number) => {
+  const sendAchievement = (milestone: AchievementMilestone) => {
     if (!settings.enabled) return;
     const messages = getMessages();
-    addNotification('achievement', messages.achievementTitle, messages.achievementMessage(day));
+    const entry = messages.milestones[milestone];
+    if (!entry) return;
+    addNotification('achievement', entry.title, entry.message);
   };
 
   // Set up daily reminder scheduler

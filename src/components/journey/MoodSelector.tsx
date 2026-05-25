@@ -1,6 +1,6 @@
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 // PDF specifies 3 options (1/2/3 style) with friendly tone, no clinical labels
 export type Mood = 'good' | 'okay' | 'difficult';
@@ -42,28 +42,28 @@ export function MoodSelector({ onSelect, selectedMood, showResponse = true }: Mo
             whileTap={!selectedMood ? { scale: 0.95 } : {}}
           >
             <span className="text-3xl">{mood.emoji}</span>
-            <span className="text-sm font-medium text-foreground">
+            <span className="text-sm font-medium text-foreground min-h-[1.25rem]">
               {t(`mood.${mood.key}` as any)}
             </span>
           </motion.button>
         ))}
       </div>
 
-      {/* Empathetic response after selection (per PDF spec) */}
-      <AnimatePresence>
-        {showResponse && selectedMood && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="text-center p-4 rounded-xl bg-accent/20 border border-accent/30"
-          >
-            <p className="text-sm text-foreground">
-              {t(`mood.response.${selectedMood}` as any)}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Response area — shows X placeholder before selection, message after */}
+      {showResponse && (
+        <motion.div
+          key={selectedMood || 'placeholder'}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center p-4 rounded-xl bg-accent/20 border border-accent/30"
+        >
+          <p className="text-sm text-foreground">
+            {selectedMood
+              ? t(`mood.response.${selectedMood}` as any)
+              : <span className="text-muted-foreground/70 text-xl font-medium">X</span>}
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }

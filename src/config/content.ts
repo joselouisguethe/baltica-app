@@ -28,14 +28,19 @@ export interface DayContent {
     'es-ES': string;
     'en': string;
   };
+  audioSection?: {
+    category: { 'es-LATAM': string; 'es-ES': string; 'en': string };
+    title: { 'es-LATAM': string; 'es-ES': string; 'en': string };
+    description: { 'es-LATAM': string; 'es-ES': string; 'en': string };
+  };
 }
 
 // Day 0 extended content: dual videos + PDF (no audio)
 export const day0ExtendedContent = {
   welcomeVideo: { url: '/BIENVENIDA.mp4', duration: '2:00', title: 'Bienvenida' } as MediaAsset,
   introVideo: { url: '/INTRODUCCION.mp4', duration: '2:30', title: 'Introducción' } as MediaAsset,
-  welcomePdf: { url: '/PDF Bienvenida.pdf', duration: '', title: 'PDF Bienvenida' } as MediaAsset,
-  introPdf: { url: '/Guía de Bienvenida.pdf', duration: '', title: 'Guía de Introducción' } as MediaAsset,
+  welcomePdf: { url: '/Bienvenida.pdf', duration: '', title: 'Bienvenida' } as MediaAsset,
+  introPdf: { url: '/INTRODUCCIÓN.pdf', duration: '', title: 'Guía de Introducción' } as MediaAsset,
 };
 
 // Day 0 (Block 0) base content for backward compat
@@ -43,9 +48,9 @@ export const welcomeContent: DayContent = {
   id: 0,
   key: 'welcome',
   title: {
-    'es-LATAM': 'Día 1: Bienvenida y Anclaje',
-    'es-ES': 'Día 1: Bienvenida y Anclaje',
-    'en': 'Day 1: Welcome & Grounding',
+    'es-LATAM': 'Bienvenida e Introducción',
+    'es-ES': 'Bienvenida e Introducción',
+    'en': 'Welcome & Introduction',
   },
   subtitle: {
     'es-LATAM': 'Hoy conocerás el programa y darás tu primer paso hacia el bienestar',
@@ -78,8 +83,8 @@ export const day1Content: DayContent = {
   id: 1,
   key: 'day1',
   title: {
-    'es-LATAM': 'Día 1: Anclaje',
-    'es-ES': 'Día 1: Anclaje',
+    'es-LATAM': 'Día 1: Grounding',
+    'es-ES': 'Día 1: Grounding',
     'en': 'Day 1: Grounding',
   },
   subtitle: {
@@ -95,10 +100,10 @@ export const day1Content: DayContent = {
   audio: {
     url: '/Audio Grounding MAESTRO.mp3',
     duration: '5:00',
-    title: 'Respiración consciente',
+    title: 'Meditación: Notar y Estar',
   },
   pdf: {
-    url: '/PDF Dia 1. GROUNDING.pdf',
+    url: '/GROUNDING día 1.pdf',
     duration: '',
     title: 'Material día 1 - Grounding',
   },
@@ -107,15 +112,32 @@ export const day1Content: DayContent = {
     'es-ES': 'Toma 3 respiraciones profundas antes de cada comida hoy.',
     'en': 'Take 3 deep breaths before each meal today.',
   },
+  audioSection: {
+    category: {
+      'es-LATAM': 'Tu pausa diaria',
+      'es-ES': 'Tu pausa diaria',
+      'en': 'Your daily pause',
+    },
+    title: {
+      'es-LATAM': 'Meditación: Notar y Estar',
+      'es-ES': 'Meditación: Notar y Estar',
+      'en': 'Meditation: Notice and Be',
+    },
+    description: {
+      'es-LATAM': 'Un espacio breve para soltar la prisa y conectar con tu respiración.',
+      'es-ES': 'Un espacio breve para soltar la prisa y conectar con tu respiración.',
+      'en': 'A brief space to let go of hurry and connect with your breath.',
+    },
+  },
 };
 
 export const day2Content: DayContent = {
   id: 2,
   key: 'day2',
   title: {
-    'es-LATAM': 'Día 2: Acción con propósito',
-    'es-ES': 'Día 2: Acción con propósito',
-    'en': 'Day 2: Purposeful action',
+    'es-LATAM': 'Día 2: Acción con Propósito',
+    'es-ES': 'Día 2: Acción con Propósito',
+    'en': 'Day 2: Purposeful Action',
   },
   subtitle: {
     'es-LATAM': 'Hoy conectamos lo que haces con lo que importa.',
@@ -130,17 +152,34 @@ export const day2Content: DayContent = {
   audio: {
     url: '/Audios AconP MAESTRO.mp3',
     duration: '5:00',
-    title: 'Meditación guiada',
+    title: 'Audio: Habitar el cuerpo',
   },
   pdf: {
-    url: '/PDF Día 2.pdf',
+    url: '/AUTOCUIDADO día 2.pdf',
     duration: '',
-    title: 'Material día 2',
+    title: 'Guía de Bienvenida: Calma y Foco',
   },
   practice: {
     'es-LATAM': 'Realiza una acción pequeña alineada con tu valor elegido.',
     'es-ES': 'Realiza una acción pequeña alineada con tu valor elegido.',
     'en': 'Perform a small action aligned with your chosen value.',
+  },
+  audioSection: {
+    category: {
+      'es-LATAM': 'Momento de calma',
+      'es-ES': 'Momento de calma',
+      'en': 'Moment of calm',
+    },
+    title: {
+      'es-LATAM': 'Audio: Habitar el cuerpo',
+      'es-ES': 'Audio: Habitar el cuerpo',
+      'en': 'Audio: Inhabit the body',
+    },
+    description: {
+      'es-LATAM': 'Relaja la mente mientras le das a tu cuerpo el descanso que necesita hoy.',
+      'es-ES': 'Relaja la mente mientras le das a tu cuerpo el descanso que necesita hoy.',
+      'en': 'Relax the mind while giving your body the rest it needs today.',
+    },
   },
 };
 
@@ -148,9 +187,9 @@ export const day3Content: DayContent = {
   id: 3,
   key: 'day3',
   title: {
-    'es-LATAM': 'Día 3: Cierre con autocompasión',
-    'es-ES': 'Día 3: Cierre con autocompasión',
-    'en': 'Day 3: Closing with self-compassion',
+    'es-LATAM': 'Día 3: Autocompasión',
+    'es-ES': 'Día 3: Autocompasión',
+    'en': 'Day 3: Self-Compassion',
   },
   subtitle: {
     'es-LATAM': 'Llegaste hasta aquí. Eso dice mucho de ti.',
@@ -165,17 +204,34 @@ export const day3Content: DayContent = {
   audio: {
     url: '/Audio Autocompasión MAESTRO.mp3',
     duration: '5:00',
-    title: 'Meditación de autocompasión',
+    title: 'Práctica: Soltar y Renovar',
   },
   pdf: {
-    url: '/PDF Dia 3.pdf',
+    url: '/AUTOCOMPASION día 3.pdf',
     duration: '',
     title: 'Material día 3',
   },
   practice: {
-    'es-LATAM': 'Escríbete una frase amable y recuérdala durante el día.',
-    'es-ES': 'Escríbete una frase amable y recuérdala durante el día.',
+    'es-LATAM': 'Este es el comienzo de una relación más amable contigo.',
+    'es-ES': 'Este es el comienzo de una relación más amable contigo.',
     'en': 'Write yourself a kind phrase and remember it throughout the day.',
+  },
+  audioSection: {
+    category: {
+      'es-LATAM': 'Espacio de bienestar',
+      'es-ES': 'Espacio de bienestar',
+      'en': 'Wellbeing space',
+    },
+    title: {
+      'es-LATAM': 'Práctica: Soltar y Renovar',
+      'es-ES': 'Práctica: Soltar y Renovar',
+      'en': 'Practice: Release and Renew',
+    },
+    description: {
+      'es-LATAM': 'Concluye este viaje con una guía diseñada para llevar la calma contigo a todas partes.',
+      'es-ES': 'Concluye este viaje con una guía diseñada para llevar la calma contigo a todas partes.',
+      'en': 'Conclude this journey with a guide designed to carry calm with you everywhere.',
+    },
   },
 };
 
@@ -320,9 +376,9 @@ export const achievements: Achievement[] = [
     id: 'program-complete',
     icon: '🏆',
     title: {
-      'es-LATAM': 'Viaje completo',
-      'es-ES': 'Viaje completo',
-      'en': 'Journey complete',
+      'es-LATAM': 'Reto Completado',
+      'es-ES': 'Reto Completado',
+      'en': 'Challenge Completed',
     },
     description: {
       'es-LATAM': 'Completaste el programa de 3 días',

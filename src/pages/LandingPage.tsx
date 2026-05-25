@@ -662,53 +662,39 @@ export default function LandingPage() {
                 id: 'basico',
                 name: 'Plan Básico',
                 duration: '1 mes',
-                regular: '$58.598',
-                launch: '$35.000',
+                regular: '$80.000',
+                launch: '$45.000',
                 promo: null,
                 features: [
-                  'Bienvenida y primeros pasos',
-                  'Día 1: Grounding para ordenar tus ideas',
-                  'Día 2: Acción con propósito para no estancarte',
-                  'Día 3: Autocompasión para no rendirte',
-                  'Certificado de BienestaR',
-                  'Video: La Ciencia Detrás del Reto Báltica',
                 ],
                 highlight: false,
               },
               {
                 id: 'intermedio',
                 name: 'Plan Intermedio',
-                duration: '3 meses',
-                regular: '$175.795',
-                launch: '$70.000',
+                duration: '4 meses',
+                regular: '$320.000',
+                launch: '$90.000',
                 promo: 'Pague 2 lleve 3',
                 features: [
-                  'Todo lo del Plan Básico',
-                  'Video: Entender más sobre Grounding',
-                  'Video: Un poco más sobre Acción con Propósito',
-                  'Video: La Autocompasión, para entenderlo mejor',
-                  'Descuento del 25% Reto Báltica 7 días',
-                  'Descuento del 15% para el primer combo',
+                  '10 micro-acciones de impacto inmediato (protocolo de alto rendimiento)',
+                  'Para Entender más (Grounding, acción, autocompasión)',
+                  'Infográfico protocolo',
+                  '30% desc Próximo Curso',
                 ],
                 highlight: false,
               },
               {
                 id: 'premium',
                 name: 'Plan Premium',
-                duration: '6 meses',
-                regular: '$351.590',
-                launch: '$140.000',
+                duration: '8 meses',
+                regular: '$640.000',
+                launch: '$120.000',
                 promo: 'Pague 4 lleve 6',
                 features: [
-                  'Todo lo del Plan Intermedio',
-                  'Masterclass de Neurociencia',
-                  'Protocolo de alto rendimiento (10 micro-acciones)',
-                  '50 micro-acciones con propósito',
-                  '30 señales de desgaste',
-                  'Infografías para cada documento',
-                  'Bono: Plan Básico Gratis para un amigo',
-                  'Descuento 50% Reto Báltica 7 días',
-                  'Descuento 30% primer combo',
+                  'El código del hábito (Master Class)',
+                  'De la intención a la acción (50 con propésito)',
+                  '60% desc. Próximo Curso',
                 ],
                 highlight: true,
               },
@@ -730,7 +716,7 @@ export default function LandingPage() {
                   <span className="inline-block text-xl font-bold bg-primary/30 text-primary px-3 py-1.5 rounded-full mb-3 w-fit">{plan.promo}</span>
                 )}
                 <p className="text-sm text-white/50 line-through">{plan.regular}</p>
-                <p className="text-6xl md:text-6xl font-extrabold text-primary mb-4">{plan.launch}<span className="text-base font-semibold text-white/60 ml-1">COP</span></p>
+                <p className="text-5xl md:text-5xl font-extrabold text-primary mb-4">{plan.launch}<span className="text-base font-semibold text-white/60 ml-1">COP</span></p>
                 <ul className="space-y-2 flex-1 mb-5">
                   {plan.features.map((f, fi) => {
                     const isSpecial =

@@ -24,7 +24,7 @@ const Index = () => {
   const hasStarted = progress.completedDays.length > 0;
   const programComplete = progress.completedDays.includes(3);
   const retoDaysCompleted = progress.completedDays.filter(d => d > 0).length;
-  const progressPercent = Math.min((retoDaysCompleted / totalDays) * 100, 100);
+  const progressPercent = Math.min((progress.currentDay / totalDays) * 100, 100);
   
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -101,7 +101,7 @@ const Index = () => {
                 {getGreeting()}{userName && `, ${userName}`}
               </p>
               <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                {t('journey.day')} {progress.currentDay === 0 ? 1 : progress.currentDay} {t('journey.of')} {totalDays}
+                {t('journey.day')} {progress.currentDay === 0 ? 1 : retoDaysCompleted} {t('journey.of')} {totalDays}
               </h1>
             </>
           ) : (
@@ -134,7 +134,7 @@ const Index = () => {
               <ProgressRing progress={progressPercent} size={120} strokeWidth={10}>
                 <div className="text-center">
                   <span className="text-2xl font-bold text-primary">
-                    {retoDaysCompleted}
+                    {progress.currentDay}
                   </span>
                   <span className="text-muted-foreground text-xs block">
                     / {totalDays}
@@ -219,7 +219,7 @@ const Index = () => {
         )}
 
         {/* Streak */}
-        {progress.streak > 0 && (
+        {/* {progress.streak > 0 && (
           <motion.div
             className="mt-4 p-4 bg-accent/30 rounded-xl text-center"
             initial={{ opacity: 0, y: 20 }}
@@ -231,7 +231,7 @@ const Index = () => {
             </p>
             <p className="text-sm text-muted-foreground">{t('progress.keep')}</p>
           </motion.div>
-        )}
+        )} */}
       </main>
 
       {/* Floating Help Button - bottom right */}

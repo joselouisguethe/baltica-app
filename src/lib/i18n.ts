@@ -1,7 +1,7 @@
 export type Locale = 'es-ES' | 'es-LATAM' | 'en';
 
 export const locales: { code: Locale; label: string; flag: string }[] = [
-  { code: 'es-LATAM', label: 'Español (Latinoamérica)', flag: '🌎' },
+  { code: 'es-LATAM', label: 'España (Latinoamérica)', flag: '🌎' },
   { code: 'en', label: 'English', flag: '🇺🇸' },
 ];
 // { code: 'es-ES', label: 'Español (España)', flag: '🇪🇸' },
@@ -334,7 +334,7 @@ export const translations = {
     // Content
     'content.video': 'Vídeo',
     'content.audio': 'Audio guiado',
-    'content.download': 'Material descargable',
+    'content.download': 'Tu punto de partida',
     'content.survey': 'Tu estado emocional',
     'content.practice': 'Práctica del día',
     'content.minutes': 'min',
@@ -373,7 +373,7 @@ export const translations = {
     'closure.share': 'Compartir logro',
     'closure.nextDay.prefix': 'Mañana: ',
     'closure.nextDay.day1': 'Grounding - conectando con el presente',
-    'closure.nextDay.day2': 'Acción con Propósito - actuando desde tus valores',
+    'closure.nextDay.day2': 'Acción con Propósito',
     'closure.nextDay.day3': 'Autocompasión - celebrando tu camino',
 
     // Progress
@@ -843,7 +843,7 @@ export const translations = {
     // Content
     'content.video': 'Video',
     'content.audio': 'Audio guiado',
-    'content.download': 'Material descargable',
+    'content.download': 'Tu punto de partida',
     'content.survey': 'Tu estado emocional',
     'content.practice': 'Práctica del día',
     'content.minutes': 'min',
@@ -874,7 +874,7 @@ export const translations = {
     'energy.response.low': 'Está bien. Iremos a tu ritmo.',
 
     // Closure
-    'closure.title': '¡Muy bien!',
+    'closure.title': '¡LO LOGRASTE!',
     'closure.subtitle': 'Completaste el día',
     'closure.practice.title': 'Tu práctica para hoy',
     'closure.practice.reminder': 'Recuerda aplicar esto durante el día',
@@ -882,7 +882,7 @@ export const translations = {
     'closure.share': 'Compartir logro',
     'closure.nextDay.prefix': 'Mañana: ',
     'closure.nextDay.day1': 'Grounding - conectando con el presente',
-    'closure.nextDay.day2': 'Acción con Propósito - actuando desde tus valores',
+    'closure.nextDay.day2': 'Acción con Propósito',
     'closure.nextDay.day3': 'Autocompasión - celebrando tu camino',
 
     // Progress
