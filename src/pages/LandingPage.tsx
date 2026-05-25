@@ -716,7 +716,7 @@ export default function LandingPage() {
                   <span className="inline-block text-xl font-bold bg-primary/30 text-primary px-3 py-1.5 rounded-full mb-3 w-fit">{plan.promo}</span>
                 )}
                 <p className="text-sm text-white/50 line-through">{plan.regular}</p>
-                <p className="text-5xl md:text-5xl font-extrabold text-primary mb-4">{plan.launch}<span className="text-base font-semibold text-white/60 ml-1">COP</span></p>
+                <p className="text-4xl md:text-4xl font-extrabold text-primary mb-4">{plan.launch}<span className="text-base font-semibold text-white/60 ml-1">COP</span></p>
                 <ul className="space-y-2 flex-1 mb-5">
                   {plan.features.map((f, fi) => {
                     const isSpecial =

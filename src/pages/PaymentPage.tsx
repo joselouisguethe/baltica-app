@@ -232,7 +232,7 @@ export default function PaymentPage() {
                   <div className="mt-2">
                     <span className="text-sm text-muted-foreground line-through">{plan.regular}</span>
                     <div>
-                      <span className="text-5xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-4xl font-bold text-foreground">{plan.price}</span>
                       <span className="text-muted-foreground text-xs"> COP</span>
                     </div>
                   </div>
