@@ -610,7 +610,7 @@ export default function LandingPage() {
           >
             <video
               src="/La_Reto_Baltica.mp4"
-              className="w-full h-auto block rounded-2xl"
+              className="w-1/2 h-auto block rounded-2xl"
               autoPlay
               loop
               playsInline
