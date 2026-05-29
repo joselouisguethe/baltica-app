@@ -610,7 +610,7 @@ export default function LandingPage() {
           >
             <video
               src="/La_Reto_Baltica.mp4"
-              className="w-1/2 h-auto block rounded-2xl"
+              className="w-full sm:w-1/2 h-auto block rounded-2xl"
               autoPlay
               loop
               playsInline
@@ -700,7 +700,7 @@ export default function LandingPage() {
           </motion.p>
 
           {/* 3 Plans */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             {[
               {
                 id: 'basico',
