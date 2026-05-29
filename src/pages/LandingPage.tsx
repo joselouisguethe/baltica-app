@@ -602,17 +602,16 @@ export default function LandingPage() {
       <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.div
-            className="aspect-video rounded-2xl bg-card border-2 border-dashed border-border/60 flex flex-col items-center justify-center text-muted-foreground"
+            className="aspect-video rounded-2xl flex flex-col items-center justify-center text-muted-foreground"
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4 }}
           >
             <video
-              src="/La_Reto_Baltica.mp4​​"
+              src="/La_Reto_Baltica.mp4"
               className="w-full h-auto block rounded-2xl"
               autoPlay
-              muted
               loop
               playsInline
               controls
