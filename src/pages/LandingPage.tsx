@@ -609,7 +609,7 @@ export default function LandingPage() {
             transition={{ duration: 0.4 }}
           >
             <video
-              src="/La ciencia detras del Reto Baltica.mp4​​"
+              src="/La_Reto_Baltica.mp4​​"
               className="w-full h-auto block rounded-2xl"
               autoPlay
               muted
