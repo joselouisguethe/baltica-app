@@ -131,7 +131,7 @@ const Index = () => {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
             >
-              <ProgressRing progress={progressPercent} size={120} strokeWidth={10}>
+              <ProgressRing progress={progressPercent} size={160} strokeWidth={12}>
                 <div className="text-center">
                   <span className="text-2xl font-bold text-primary">
                     {progress.currentDay}

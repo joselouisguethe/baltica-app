@@ -103,6 +103,27 @@ export function Header() {
             <span className="sr-only">{t('settings.theme')}</span>
           </Button>
 
+          {/* Language toggle — always visible */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9 mx-1 sm:mx-2">
+                <Globe className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {locales.map(loc => (
+                <DropdownMenuItem
+                  key={loc.code}
+                  onClick={() => setLocale(loc.code)}
+                  className={cn(locale === loc.code && 'bg-accent')}
+                >
+                  <span className="mr-2">{loc.flag}</span>
+                  <p className='w-full text-center'>{loc.label}</p>                    
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {/* Back button - pre-login pages */}
           {!isAuthenticated && location.pathname !== '/landing' && (
             <Button

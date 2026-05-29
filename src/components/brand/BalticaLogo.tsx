@@ -37,7 +37,7 @@ export function BalticaLogo({
       />
       {/* Dark mode logo */}
       <img
-        src={'/Logo MODO NOCTURNO.jpeg'}
+        src={'/logo-header-dark.png'}
         alt="Báltica Education"
         style={{ height: size , width: 'auto' }}
         className={`object-contain hidden dark:block ${className}`}

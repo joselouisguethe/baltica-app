@@ -47,7 +47,7 @@ const faqSections: Record<string, FaqSection[]> = {
       faqs: [
         {
           question: '¿Qué es el RETO DE 3 DÍAS?',
-          answer: 'El RETO DE 3 DÍAS es un programa de micro-experiencias diarias de autocuidado y formación de hábitos, pensado para acompañarte con prácticas breves, claras y sostenibles. Incluye 3 días completos de contenido bajo la misma estructura (Video – Audio – PDF), una bienvenida y una introducción que muestra el contenido y desarrollo del programa.',
+          answer: 'El RETO DE 3 DÍAS es un programa de micro-experiencias diarias de volver a la calma y formación de autocompasión, pensado para acompañarte con prácticas breves, claras y sostenibles. Incluye 3 días completos de contenido bajo la misma estructura (Video – Audio – PDF), una bienvenida y una introducción que muestra el contenido y desarrollo del programa.',
         },
         {
           question: '¿El RETO DE 3 DÍAS es una terapia médica?',
@@ -245,7 +245,7 @@ const faqSections: Record<string, FaqSection[]> = {
       faqs: [
         {
           question: '¿Qué es el RETO DE 3 DÍAS?',
-          answer: 'El RETO DE 3 DÍAS es un programa de micro-experiencias diarias de autocuidado y formación de hábitos, pensado para acompañarte con prácticas breves, claras y sostenibles. Incluye 3 días completos de contenido bajo la misma estructura (Video – Audio – PDF), una bienvenida y una introducción que muestra el contenido y desarrollo del programa.',
+          answer: 'El RETO DE 3 DÍAS es un programa de micro-experiencias diarias de volver a la calma y formación de autocompasión, pensado para acompañarte con prácticas breves, claras y sostenibles. Incluye 3 días completos de contenido bajo la misma estructura (Video – Audio – PDF), una bienvenida y una introducción que muestra el contenido y desarrollo del programa.',
         },
         {
           question: '¿El RETO DE 3 DÍAS es una terapia médica?',
@@ -628,7 +628,7 @@ export default function HelpPage() {
                     <span className="w-7 h-7 rounded-full bg-primary/10 text-primary text-xs flex items-center justify-center font-bold shrink-0">
                       {sectionIndex + 1}
                     </span>
-                    <span className="font-semibold text-foreground text-base md:text-lg">
+                    <span className="font-semibold text-foreground text-lg md:text-xl">
                       {section.title}
                     </span>
                   </span>
@@ -641,10 +641,10 @@ export default function HelpPage() {
                         value={`section-${sectionIndex}-faq-${faqIndex}`}
                         className="bg-muted/50 rounded-lg border-0 px-3"
                       >
-                        <AccordionTrigger className="text-left text-sm hover:no-underline py-3">
+                        <AccordionTrigger className="text-left text-lg hover:no-underline py-3">
                           {faq.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground whitespace-pre-line text-sm">
+                        <AccordionContent className="text-muted-foreground whitespace-pre-line text-base">
                           {faq.answer}
                         </AccordionContent>
                       </AccordionItem>

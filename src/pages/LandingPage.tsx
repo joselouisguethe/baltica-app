@@ -1,12 +1,15 @@
+import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play } from 'lucide-react';
+import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, CreditCard, Zap, Crown, } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import BalticaLogo from '@/components/brand/BalticaLogo';
 import { EthicalNote } from '@/components/EthicalNote';
 import { locales } from '@/lib/i18n';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,31 +26,42 @@ import { cn } from '@/lib/utils';
 export default function LandingPage() {
   const { t, locale, setLocale, theme, setTheme } = useApp();
   const navigate = useNavigate();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   usePageTitle('Reto de 3 Días de Bienestar y Gestión del Estrés | Metodología Báltica');
+  const es = locale.startsWith('es');
 
-  const goToRegister = () => navigate('/auth?mode=register');
+  const goToRegister = () => {
+    setMobileMenuOpen(false);
+    navigate('/auth?mode=register');
+  };
+
+  const goToLogin = () => {
+    setMobileMenuOpen(false);
+    navigate('/auth?mode=login');
+  };
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg h-32 dark:h-36">
-        <div className="container mx-auto flex h-32 dark:h-36 items-center justify-between px-4">
-          <Link to="/" className="flex items-center mt-10 dark:mt-12">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg">
+        <div className="container mx-auto flex h-32 items-center justify-between px-4">
+          <Link to="/" className="flex items-center mt-10">
             {/* Light mode logo */}
             <span className="dark:hidden">
               <BalticaLogo variant="header" size={96} />
             </span>
             {/* Dark mode logo, larger */}
-            <span className="hidden dark:inline">
-              <BalticaLogo variant="header" size={128} />
+            <span className="hidden dark:block">
+              <BalticaLogo variant="header" size={96} />
             </span>
           </Link>
 
           <div className="flex items-center gap-1">
+            {/* Language toggle — always visible */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 mx-2">
-                  <Globe size={"2rem"} className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-9 w-9 mx-1 sm:mx-2">
+                  <Globe className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -58,27 +72,58 @@ export default function LandingPage() {
                     className={cn(locale === loc.code && 'bg-accent')}
                   >
                     <span className="mr-2">{loc.flag}</span>
-                    {loc.label}
+                    <p className='w-full text-center'>{loc.label}</p>                    
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Theme toggle — always visible */}
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 mx-2"
+              className="h-9 w-9 mx-1 sm:mx-2"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             >
-              {theme === 'dark' ? <Sun size={"2rem"} className="h-4 w-4" /> : <Moon size={"2rem"} className="h-4 w-4" />}
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/auth?mode=login')}>
+
+            {/* Login button — always visible */}
+            <Button variant="ghost" size="sm" onClick={goToLogin}>
               {t('auth.login.cta')}
             </Button>
-            <Button size="sm" onClick={goToRegister}>
+
+            {/* Big CTA — visible on md+ only */}
+            <Button size="sm" onClick={goToRegister} className="hidden md:inline-flex">
               {t('landing.cta')}
+            </Button>
+
+            {/* Hamburger — mobile only */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
         </div>
+
+        {/* Mobile collapse panel — only visible on mobile when opened */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-border/40 bg-background px-4 py-4">
+            <Button
+              size="lg"
+              className="w-full gap-2 px-6 py-4 text-sm font-semibold rounded-full shadow-soft whitespace-normal text-center leading-tight"
+              onClick={goToRegister}
+            >
+              {t('landing.cta')}
+              <ArrowRight className="h-4 w-4 shrink-0" />
+            </Button>
+          </div>
+        )}
       </header>
 
       {/* ===== SECTION 1: HERO (text only, full width) ===== */}
@@ -99,10 +144,10 @@ export default function LandingPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <span className="block text-3xl md:text-4xl lg:text-5xl font-bold text-primary leading-tight mb-2">
+            <span className="block text-3xl md:text-4xl lg:text-6xl font-bold text-primary leading-tight mb-2">
               {t('landing.headline1' as any)}
             </span>
-            <span className="block text-xl md:text-2xl lg:text-3xl font-medium text-foreground leading-snug">
+            <span className="block text-xl md:text-2xl lg:text-4xl font-medium text-foreground leading-snug">
               {t('landing.headline2' as any)}
             </span>
           </motion.h1>
@@ -504,7 +549,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="py-16 md:py-20">
+      {/* <section className="py-16 md:py-20">
         <div className="container mx-auto px-4 max-w-7xl">
           <motion.h2
             className="text-2xl md:text-3xl font-bold text-foreground mb-10 text-center"
@@ -551,10 +596,10 @@ export default function LandingPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ===== VIDEO CORTO (placeholder — pending from client) ===== */}
-      {/* <section className="py-12 md:py-16 bg-muted/30">
+      <section className="py-12 md:py-16 bg-muted/30">
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.div
             className="aspect-video rounded-2xl bg-card border-2 border-dashed border-border/60 flex flex-col items-center justify-center text-muted-foreground"
@@ -564,7 +609,7 @@ export default function LandingPage() {
             transition={{ duration: 0.4 }}
           >
             <video
-              src="/LaCienciaDetrsdelRetoBltica_1080vL.mp4"
+              src="/La ciencia detras del Reto Baltica.mp4​​"
               className="w-full h-auto block rounded-2xl"
               autoPlay
               muted
@@ -574,7 +619,7 @@ export default function LandingPage() {
             />
           </motion.div>
         </div>
-      </section> */}
+      </section>
 
       {/* ===== SECTION 6: AUTORIDAD Y RESPALDO CIENTÍFICO ===== */}
       <section className="py-16 md:py-20">
@@ -660,6 +705,7 @@ export default function LandingPage() {
             {[
               {
                 id: 'basico',
+                icon: Zap,
                 name: 'Plan Básico',
                 duration: '1 mes',
                 regular: '$80.000',
@@ -671,29 +717,31 @@ export default function LandingPage() {
               },
               {
                 id: 'intermedio',
+                icon: Star,
                 name: 'Plan Intermedio',
-                duration: '4 meses',
+                duration: '',
                 regular: '$320.000',
                 launch: '$90.000',
-                promo: 'Pague 2 lleve 3',
+                promo: '4 meses',
                 features: [
                   '10 micro-acciones de impacto inmediato (protocolo de alto rendimiento)',
                   'Para Entender más (Grounding, acción, autocompasión)',
-                  'Infográfico protocolo',
+                  'Infografía Protocolo de Alto Rendimiento',
                   '30% desc Próximo Curso',
                 ],
                 highlight: false,
               },
               {
                 id: 'premium',
+                icon: Crown,
                 name: 'Plan Premium',
-                duration: '8 meses',
+                duration: '',
                 regular: '$640.000',
                 launch: '$120.000',
-                promo: 'Pague 4 lleve 6',
+                promo: '8 meses',
                 features: [
                   'El código del hábito (Master Class)',
-                  'De la intención a la acción (50 con propésito)',
+                  'De la intención a la acción (50 micro-acciones …)',
                   '60% desc. Próximo Curso',
                 ],
                 highlight: true,
@@ -707,39 +755,57 @@ export default function LandingPage() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ delay: i * 0.12, duration: 0.4 }}
               >
-                {plan.highlight && (
-                  <span className="text-xs font-bold uppercase tracking-wider text-primary mb-2">Mejor valor</span>
-                )}
-                <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-xl md:text-2xl font-bold text-white/80 mb-3">{plan.duration}</p>
-                {plan.promo && (
-                  <span className="inline-block text-xl font-bold bg-primary/30 text-primary px-3 py-1.5 rounded-full mb-3 w-fit">{plan.promo}</span>
-                )}
-                <p className="text-sm text-white/50 line-through">{plan.regular}</p>
-                <p className="text-4xl md:text-4xl font-extrabold text-primary mb-4">{plan.launch}<span className="text-base font-semibold text-white/60 ml-1">COP</span></p>
-                <ul className="space-y-2 flex-1 mb-5">
-                  {plan.features.map((f, fi) => {
-                    const isSpecial =
-                      (plan.id === 'intermedio' && fi >= plan.features.length - 2) ||
-                      (plan.id === 'premium' && fi >= plan.features.length - 2);
-                    return (
-                      <li
-                        key={fi}
-                        className="flex items-start gap-2 text-sm font-semibold text-white/90"
-                      >
-                        <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                        <span className={isSpecial ? 'text-lg font-bold' : ''}>{f}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
-                <Button
-                  className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'}`}
-                  onClick={goToRegister}
-                >
-                  {locale.startsWith('es') ? 'Elegir plan' : 'Choose plan'}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                <Card className={`h-full flex flex-col ${plan.highlight ? 'border-primary ring-2 ring-primary/20' : ''}`}>
+                  <CardHeader className="text-center py-4 pb-2">
+                    {plan.highlight && (
+                      <Badge className="w-fit mx-auto mb-2 bg-primary text-primary-foreground">
+                        {es ? 'Mejor valor' : 'Best value'}
+                      </Badge>
+                    )}
+                    <div className="w-10 h-10 rounded-full mx-auto mb-2 flex items-center justify-center bg-primary/10">
+                      <plan.icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <CardDescription className="text-xs">
+                      <p className="text-lg md:text-lg font-bold mb-3">{plan.duration}</p>
+                      {plan.promo && (
+                        <span className="block text-primary md:text-lg font-semibold mt-1">{plan.promo}</span>
+                      )}
+                    </CardDescription>
+                    <div className="mt-2">
+                      <span className="text-sm text-muted-foreground line-through">{plan.regular}</span>
+                      <div>
+                        <span className="text-4xl font-bold text-foreground">{plan.launch}</span>
+                        <span className="text-muted-foreground text-xs"> COP</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+  
+                  <CardContent className="pt-0 pb-4 flex-1 flex flex-col">
+                    <ul className="space-y-2 flex-1 mb-4">
+                      {plan.features.map((feature, fi) => {
+                        const isSpecial =
+                          (plan.id === 'intermedio' && fi >= plan.features.length - 1) ||
+                          (plan.id === 'premium' && fi >= plan.features.length - 2);
+                        return (
+                          <li key={fi}
+                            className="flex items-start gap-2 text-sm font-semibold">
+                            <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                            <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
+                          </li>
+                        )
+                      })}
+                    </ul>
+  
+                    <Button
+                      className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'}`}
+                      onClick={goToRegister}
+                    >
+                      {locale.startsWith('es') ? 'Elegir plan' : 'Choose plan'}
+                      <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
           </div>

@@ -8,27 +8,34 @@ interface ProgressRingProps {
   children?: React.ReactNode;
 }
 
-export function ProgressRing({ 
-  progress, 
-  size = 120, 
+export function ProgressRing({
+  progress,
+  size = 120,
   strokeWidth = 8,
   className,
-  children 
+  children
 }: ProgressRingProps) {
-  const radius = (size - strokeWidth) / 2;
+  // Subtract strokeWidth + 2px safety margin so the stroke never clips at the SVG boundary
+  const radius = (size - strokeWidth) / 2 - 1;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (progress / 100) * circumference;
 
   return (
     <div className={cn('relative inline-flex items-center justify-center', className)}>
-      <svg width={size} height={size} className="transform -rotate-90">
+      <svg
+        width={size}
+        height={size}
+        viewBox={`0 0 ${size} ${size}`}
+        className="-rotate-90"
+        style={{ overflow: 'visible', width: size, height: size, minWidth: size, minHeight: size, flexShrink: 0 }}
+      >
         {/* Background circle */}
         <circle
           cx={size / 2}
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(var(--muted))"
+          style={{ stroke: 'hsl(var(--muted))' }}
           strokeWidth={strokeWidth}
         />
         {/* Progress circle */}
@@ -37,7 +44,7 @@ export function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="hsl(var(--primary))"
+          style={{ stroke: 'hsl(var(--primary))' }}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
