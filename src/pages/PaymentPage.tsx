@@ -248,6 +248,9 @@ export default function PaymentPage() {
                         <li key={fi}
                           className="flex items-start gap-2 text-sm font-semibold">
                           <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
+                          <span>
+                            Para Entender más (<a className='border-b' href='/Entender más sobre el GROUNDING.mp4'>Grounding</a>, acción, <a className='border-b' href='/Mas sobre AUTOCOMPASION.mp4'>autocompasión</a>)
+                          </span> :
                           <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
                         </li>
                       )
