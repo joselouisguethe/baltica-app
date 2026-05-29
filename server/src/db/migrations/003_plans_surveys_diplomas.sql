@@ -15,14 +15,14 @@ CREATE TABLE IF NOT EXISTS plans (
 
 -- Seed the 3 plans
 INSERT INTO plans (id, name, duration_months, regular_price, launch_price, features) VALUES
-  ('basico', 'Plan Básico', 1, 58598, 35000, '[
+  ('basico', 'Plan Básico', 1, 58598, 45000, '[
     "Bienvenida y primeros pasos, Día 1: Grounding para ordenar tus ideas",
     "Día 2: Acción con propósito para no estancarte",
     "Día 3: Autocompasión para no rendirte",
     "Certificado de Bienestar",
     "Video: La Ciencia Detrás del Reto Báltica"
   ]'),
-  ('intermedio', 'Plan Intermedio', 3, 175795, 70000, '[
+  ('intermedio', 'Plan Intermedio', 3, 175795, 90000, '[
     "Todo lo del Plan Básico",
     "Video extra: Entender más sobre Grounding",
     "Video extra: Un poco más sobre Acción con Propósito",
@@ -30,7 +30,7 @@ INSERT INTO plans (id, name, duration_months, regular_price, launch_price, featu
     "Descuento del 25% Reto Báltica 7 días",
     "Descuento del 15% Reto Báltica para el primer combo"
   ]'),
-  ('premium', 'Plan Premium', 6, 351590, 140000, '[
+  ('premium', 'Plan Premium', 6, 351590, 120000, '[
     "Todo lo del Plan Intermedio",
     "El código de hábito: La masterclass de Neurociencia",
     "Protocolo de alto rendimiento (10 micro-acciones de impacto inmediato)",

@@ -83,7 +83,23 @@ export default function PaymentPage() {
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedPlan, setSelectedPlan] = useState('basico');
+  // Real per-plan prices fetched from the backend so the displayed amount
+  // always equals the amount actually charged by MercadoPago.
+  const [livePrices, setLivePrices] = useState<Record<string, string>>({});
   const es = locale.startsWith('es');
+
+  useEffect(() => {
+    api.payments.getPlans()
+      .then((data) => {
+        const map: Record<string, string> = {};
+        const fmt = new Intl.NumberFormat('es-CO');
+        (data.plans || []).forEach((p: { id: string; launch_price: number | string }) => {
+          map[p.id] = `$${fmt.format(Number(p.launch_price))}`;
+        });
+        setLivePrices(map);
+      })
+      .catch(() => {/* fall back to static prices already in PLANS */});
+  }, []);
 
   // Handle return from MercadoPago
   useEffect(() => {
@@ -117,14 +133,10 @@ export default function PaymentPage() {
           }
         })
         .catch(() => {
-          setPaymentStatus('success');
-          setPaymentCompleted(true);
-          setPlanType(plan);
-          const existingUser = getUserStatus(userEmail);
-          if (existingUser) {
-            reactivateUser(existingUser.id);
-          }
-          setTimeout(() => navigate('/'), 2000);
+          // Do NOT grant access on verification failure. The server-side
+          // webhook is the source of truth and will activate the account
+          // once MercadoPago confirms the payment. Show a pending state.
+          setPaymentStatus('pending');
         });
     } else if (status === 'failed') {
       setPaymentStatus('error');
@@ -232,7 +244,7 @@ export default function PaymentPage() {
                   <div className="mt-2">
                     <span className="text-sm text-muted-foreground line-through">{plan.regular}</span>
                     <div>
-                      <span className="text-4xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-4xl font-bold text-foreground">{livePrices[plan.id] ?? plan.price}</span>
                       <span className="text-muted-foreground text-xs"> COP</span>
                     </div>
                   </div>

@@ -93,6 +93,7 @@ export const api = {
   },
 
   payments: {
+    getPlans: () => request('/payments/plans'),
     createPreference: (planType?: string) =>
       request('/payments/create-preference', { method: 'POST', body: JSON.stringify({ plan_type: planType || 'basico' }) }),
     verifyPayment: (paymentId: string) =>
