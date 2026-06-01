@@ -278,8 +278,8 @@ export default function PaymentPage() {
                   </ul>
 
                   <Button
-                    className="w-full rounded-full gap-2"
-                    variant={plan.highlight ? 'default' : 'outline'}
+                    className="w-full rounded-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                    variant="default"
                     onClick={() => handlePayment(plan.id)}
                     disabled={paymentStatus === 'processing' || paymentStatus === 'verifying' || paymentStatus === 'success'}
                   >
