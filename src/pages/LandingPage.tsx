@@ -840,14 +840,14 @@ export default function LandingPage() {
                         {es ? 'Comprar directo' : 'Buy directly'}
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                      {/* Ruta 2: canal alterno → Hotmart */}
-                      <Button
+                      {/* Ruta 2: canal alterno → Hotmart — temporalmente oculto. Restaurar cuando el canal Hotmart esté listo. */}
+                      {/* <Button
                         variant="outline"
                         className="w-full rounded-full font-semibold gap-2"
                         onClick={() => goToHotmart(plan.id)}
                       >
                         {es ? 'Comprar por Hotmart' : 'Buy via Hotmart'}
-                      </Button>
+                      </Button> */}
                     </div>
                   </CardContent>
                 </Card>
