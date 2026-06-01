@@ -50,10 +50,11 @@ const PLANS = [
     regular: '$320.000',
     price: '$90.000',
     features: [
-      '10 micro-acciones de impacto inmediato (protocolo de alto rendimiento)',
-      'Para Entender más (Grounding, acción, autocompasión)',
-      'Infografía Protocolo de Alto Rendimiento',
-      '30% desc Próximo Curso',
+      'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.(UNA SOLA VEZ)',
+      'Video Ciencia detrás del Reto Báltica',
+      'Protocolo de Alto Rendimiento. 10 microacciones de impacto inmediato.',
+      'INFOGRAFÍA. Protocolo de Alto Rendimiento.',
+      '30% sobre el siguiente RETO.',
     ],
     highlight: false,
   },
@@ -66,9 +67,11 @@ const PLANS = [
     regular: '$1.080.000',
     price: '$180.000',
     features: [
-      'El código del hábito (Master Class)',
-      'De la intención a la acción (50 micro-acciones …)',
-      '60% desc. Próximo Curso',
+      'Todo lo del plan INTERMEDIO, más:',
+      'MASTERCLASS El Código del Habito.',
+      'De la intención a la Acción. 50 micro acciones con propósito para transformar tu día.',
+      'INFOGRAFÍA. De la intención a la Acción.',
+      'Próximos 2 Retos Báltica con el 60% de descuentos.'
     ],
     highlight: true,
   },
@@ -98,7 +101,7 @@ export default function PaymentPage() {
         });
         setLivePrices(map);
       })
-      .catch(() => {/* fall back to static prices already in PLANS */});
+      .catch(() => {/* fall back to static prices already in PLANS */ });
   }, []);
 
   // Handle return from MercadoPago
@@ -260,10 +263,15 @@ export default function PaymentPage() {
                         <li key={fi}
                           className="flex items-start gap-2 text-sm font-semibold">
                           <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                          <span>
-                            Para Entender más (<a className='border-b' href='/Entender más sobre el GROUNDING.mp4'>Grounding</a>, acción, <a className='border-b' href='/Mas sobre AUTOCOMPASION.mp4'>autocompasión</a>)
-                          </span> :
-                          <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
+                          {
+                            feature.includes("UNA SOLA VEZ") ?
+                              <span>
+                                Para entender más:
+                                Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión. <br />
+                                <a className='border-b text-red-500' href='/Entender más sobre el GROUNDING.mp4'>(UNA SOLA VEZ)</a>
+                              </span> :
+                              <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
+                          }
                         </li>
                       )
                     })}
