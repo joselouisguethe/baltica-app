@@ -12,6 +12,7 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
 import AuthPage from "./pages/AuthPage";
+import ClaimPage from "./pages/ClaimPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import JourneyPage from "./pages/JourneyPage";
 import ProgressPage from "./pages/ProgressPage";
@@ -93,6 +94,14 @@ function AppRoutes() {
         element={
           <PublicRoute>
             <AuthPage />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/claim"
+        element={
+          <PublicRoute>
+            <ClaimPage />
           </PublicRoute>
         }
       />

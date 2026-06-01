@@ -42,10 +42,20 @@ async function request<T = any>(path: string, options: RequestInit = {}): Promis
 // Auth
 export const api = {
   auth: {
-    register: (body: { email: string; name: string; password: string }) =>
+    register: (body: {
+      email: string;
+      name: string;
+      password: string;
+      utm_source?: string;
+      utm_medium?: string;
+      utm_campaign?: string;
+      landing_referrer?: string;
+    }) =>
       request('/auth/register', { method: 'POST', body: JSON.stringify(body) }),
     login: (body: { email: string; password: string }) =>
       request('/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+    claim: (body: { email: string; password: string }) =>
+      request('/auth/claim', { method: 'POST', body: JSON.stringify(body) }),
     me: () => request('/auth/me'),
     updateMe: (body: Record<string, any>) =>
       request('/auth/me', { method: 'PUT', body: JSON.stringify(body) }),
@@ -133,6 +143,9 @@ export const api = {
     },
     surveys: {
       getAll: () => request('/surveys/all'),
+    },
+    stats: {
+      channels: () => request('/admin/stats/channels'),
     },
   },
 };

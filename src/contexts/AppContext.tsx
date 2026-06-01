@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Locale, getTranslation, TranslationKey } from '@/lib/i18n';
 import { api, setToken, getToken } from '@/lib/api';
+import { getAttribution } from '@/hooks/useAttribution';
 
 interface JourneyProgress {
   currentDay: number;
@@ -69,6 +70,7 @@ interface AppContextType {
   userEmail: string;
   userRole: 'user' | 'admin';
   login: (email: string, password: string, name?: string, isRegister?: boolean) => Promise<{ success: boolean; error?: string }>;
+  claim: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
 
   // Locale
@@ -238,39 +240,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated]);
 
+  // Apply an authenticated session (shared by login/register/claim).
+  const applyAuthData = (data: any) => {
+    setToken(data.token);
+    setIsAuthenticated(true);
+    setUserEmail(data.user.email);
+    setUserName(data.user.name);
+    setUserRole(data.user.role);
+    localStorage.setItem('isAuthenticated', 'true');
+    localStorage.setItem('userEmail', data.user.email);
+    localStorage.setItem('userName', data.user.name);
+    localStorage.setItem('userRole', data.user.role);
+
+    if (data.user.locale) setLocale(data.user.locale);
+    if (data.user.onboarding_completed) setOnboardingCompletedState(true);
+
+    // Sync payment status from backend - active status means paid
+    const isPaid = data.user.status === 'active';
+    setPaymentCompletedState(isPaid);
+    localStorage.setItem(userPrefix('paymentCompleted', data.user.email), String(isPaid));
+
+    // Sync plan type
+    if (data.user.plan_type) {
+      setPlanTypeState(data.user.plan_type);
+      localStorage.setItem(userPrefix('planType', data.user.email), data.user.plan_type);
+    }
+  };
+
   const login = async (email: string, password: string, name?: string, isRegister?: boolean): Promise<{ success: boolean; error?: string }> => {
     try {
       let data: any;
       if (isRegister && name) {
-        data = await api.auth.register({ email, name, password });
+        // Tag the user with marketing attribution captured on the landing page.
+        // acquisition_source is forced to 'direct' server-side for public signups.
+        data = await api.auth.register({ email, name, password, ...getAttribution() });
       } else {
         data = await api.auth.login({ email, password });
       }
 
-      setToken(data.token);
-      setIsAuthenticated(true);
-      setUserEmail(data.user.email);
-      setUserName(data.user.name);
-      setUserRole(data.user.role);
-      localStorage.setItem('isAuthenticated', 'true');
-      localStorage.setItem('userEmail', data.user.email);
-      localStorage.setItem('userName', data.user.name);
-      localStorage.setItem('userRole', data.user.role);
-
-      if (data.user.locale) setLocale(data.user.locale);
-      if (data.user.onboarding_completed) setOnboardingCompletedState(true);
-
-      // Sync payment status from backend - active status means paid
-      const isPaid = data.user.status === 'active';
-      setPaymentCompletedState(isPaid);
-      localStorage.setItem(userPrefix('paymentCompleted', data.user.email), String(isPaid));
-
-      // Sync plan type
-      if (data.user.plan_type) {
-        setPlanTypeState(data.user.plan_type);
-        localStorage.setItem(userPrefix('planType', data.user.email), data.user.plan_type);
-      }
-
+      applyAuthData(data);
       return { success: true };
     } catch (err: any) {
       // Fallback to local mock if API is unavailable
@@ -287,6 +295,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
         return { success: true };
       }
       return { success: false, error: err.error || 'Error de autenticación' };
+    }
+  };
+
+  // Claim an account created by an external purchase (Hotmart). Sets the
+  // password for a user with must_set_password and starts an authenticated session.
+  const claim = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const data = await api.auth.claim({ email, password });
+      applyAuthData(data);
+      return { success: true };
+    } catch (err: any) {
+      return { success: false, error: err.error || 'Error al activar la cuenta' };
     }
   };
 
@@ -430,6 +450,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       userEmail,
       userRole,
       login,
+      claim,
       logout,
       locale,
       setLocale,

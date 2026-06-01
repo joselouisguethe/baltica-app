@@ -314,6 +314,7 @@ export default function AdminDashboard() {
   // Statistics
   const [surveys, setSurveys] = useState<any[]>([]);
   const [surveysLoading, setSurveysLoading] = useState(false);
+  const [channelStats, setChannelStats] = useState<{ users: any[]; revenue: any[] }>({ users: [], revenue: [] });
 
   useEffect(() => {
     if (activeTab === 'stats') {
@@ -322,8 +323,17 @@ export default function AdminDashboard() {
         .then(data => setSurveys(data.surveys || []))
         .catch(() => {})
         .finally(() => setSurveysLoading(false));
+      api.admin.stats.channels()
+        .then(data => setChannelStats({ users: data.users || [], revenue: data.revenue || [] }))
+        .catch(() => {});
     }
   }, [activeTab]);
+
+  const SOURCE_LABEL: Record<string, string> = {
+    direct: 'Página propia (Mercado Pago)',
+    hotmart: 'Hotmart',
+    admin: 'Creados por admin',
+  };
 
   const filteredUsers = users.filter(u => {
     const matchSearch = !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase());
@@ -502,6 +512,53 @@ export default function AdminDashboard() {
                     ));
                   })()}
                 </div>
+
+                {/* Ventas por canal (segmentación de clientes) */}
+                <Card className="shadow-card">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Clientes por canal</CardTitle>
+                    <CardDescription>
+                      Usuarios y ventas separados por origen, para medir el costo por cliente de cada canal.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {channelStats.users.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">Aún no hay datos por canal.</p>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="text-left text-muted-foreground border-b">
+                              <th className="py-2 pr-4">Canal</th>
+                              <th className="py-2 pr-4">Usuarios</th>
+                              <th className="py-2 pr-4">Activos</th>
+                              <th className="py-2 pr-4">Pagos</th>
+                              <th className="py-2">Ingresos</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {channelStats.users.map((row: any) => {
+                              const rev = channelStats.revenue.find(
+                                (r: any) => r.channel === row.source
+                              );
+                              return (
+                                <tr key={row.source} className="border-b last:border-0">
+                                  <td className="py-2 pr-4 font-medium">{SOURCE_LABEL[row.source] || row.source}</td>
+                                  <td className="py-2 pr-4">{row.total_users}</td>
+                                  <td className="py-2 pr-4">{row.active_users}</td>
+                                  <td className="py-2 pr-4">{rev?.completed_payments ?? 0}</td>
+                                  <td className="py-2">
+                                    {rev ? `$${Number(rev.revenue).toLocaleString('es-CO')}` : '$0'}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
 
                 {/* Plan Distribution */}
                 <Card className="shadow-card">

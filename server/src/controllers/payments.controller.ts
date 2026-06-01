@@ -186,8 +186,8 @@ export async function verifyPayment(req: Request & { user?: any }, res: Response
 
       // Record payment
       await pool.query(
-        `INSERT INTO payments (user_id, external_id, status, amount, currency, provider, plan_type)
-         VALUES ($1, $2, 'completed', $3, $4, 'mercadopago', $5)
+        `INSERT INTO payments (user_id, external_id, status, amount, currency, provider, plan_type, channel)
+         VALUES ($1, $2, 'completed', $3, $4, 'mercadopago', $5, 'mercadopago')
          ON CONFLICT (external_id) DO NOTHING`,
         [userId, String(result.id), result.transaction_amount, result.currency_id, planType]
       );
@@ -247,7 +247,7 @@ export async function webhook(req: Request, res: Response) {
 
         // Update payment record
         await pool.query(
-          `UPDATE payments SET status = 'completed', user_id = $1, amount = $2, currency = $3, provider = 'mercadopago', plan_type = $4
+          `UPDATE payments SET status = 'completed', user_id = $1, amount = $2, currency = $3, provider = 'mercadopago', plan_type = $4, channel = 'mercadopago'
            WHERE external_id = $5`,
           [userId, result.transaction_amount, result.currency_id, planType, String(result.id)]
         );

@@ -16,6 +16,15 @@ function sanitizeUser(row: any) {
 
 export async function register(req: Request, res: Response) {
   const { email, name, password } = req.body;
+  // Attribution from the landing page. acquisition_source is guarded: a public
+  // signup can only ever be 'direct'. 'hotmart' is assigned exclusively by the
+  // verified Hotmart webhook, and 'admin' only by admin-created users — so the
+  // channel buckets cannot be spoofed from the client. See dual-channel plan.
+  const acquisitionSource = 'direct';
+  const utmSource = typeof req.body?.utm_source === 'string' ? req.body.utm_source.slice(0, 100) : null;
+  const utmMedium = typeof req.body?.utm_medium === 'string' ? req.body.utm_medium.slice(0, 100) : null;
+  const utmCampaign = typeof req.body?.utm_campaign === 'string' ? req.body.utm_campaign.slice(0, 100) : null;
+  const landingReferrer = typeof req.body?.landing_referrer === 'string' ? req.body.landing_referrer.slice(0, 2000) : null;
 
   if (!email || !name || !password) {
     return res.status(400).json({ error: 'Nombre, email y contraseña son requeridos' });
@@ -39,9 +48,11 @@ export async function register(req: Request, res: Response) {
     const expiresAt = new Date(Date.now() + accessDays * 24 * 60 * 60 * 1000);
 
     const result = await pool.query(
-      `INSERT INTO users (email, name, password_hash, status, access_expires_at, access_duration_days)
-       VALUES ($1, $2, $3, 'suspended', $4, $5) RETURNING *`,
-      [email, name, passwordHash, expiresAt.toISOString(), accessDays]
+      `INSERT INTO users (email, name, password_hash, status, access_expires_at, access_duration_days,
+                          acquisition_source, utm_source, utm_medium, utm_campaign, landing_referrer)
+       VALUES ($1, $2, $3, 'suspended', $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+      [email, name, passwordHash, expiresAt.toISOString(), accessDays,
+       acquisitionSource, utmSource, utmMedium, utmCampaign, landingReferrer]
     );
 
     const user = result.rows[0];
@@ -174,5 +185,51 @@ export async function changePassword(req: AuthRequest, res: Response) {
   } catch (err: any) {
     console.error('ChangePassword error:', err);
     res.status(500).json({ error: 'Error al cambiar contraseña' });
+  }
+}
+
+// Claim an account created by an external purchase (e.g. Hotmart webhook).
+// The user exists with must_set_password=TRUE and no usable password; here they
+// set their password using the email they purchased with — no SMTP required.
+// Returns a generic error whether or not the email is claimable, to avoid
+// account enumeration.
+export async function claimAccount(req: Request, res: Response) {
+  const { email, password } = req.body;
+
+  if (!email || !password || password.length < 8) {
+    return res.status(400).json({ error: 'Email y una contraseña de al menos 8 caracteres son requeridos' });
+  }
+
+  const genericError = 'No encontramos una compra pendiente de activar con ese correo. Verifica el correo que usaste al comprar.';
+
+  try {
+    const result = await pool.query(
+      'SELECT id, email, must_set_password FROM users WHERE email = $1',
+      [email]
+    );
+    const user = result.rows[0];
+
+    if (!user || !user.must_set_password) {
+      return res.status(400).json({ error: genericError });
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    const updated = await pool.query(
+      `UPDATE users SET password_hash = $1, must_set_password = FALSE WHERE id = $2 RETURNING *`,
+      [hash, user.id]
+    );
+    const fullUser = updated.rows[0];
+
+    await pool.query(
+      `INSERT INTO access_logs (user_id, user_email, event_type, event_detail)
+       VALUES ($1, $2, 'account_claimed', 'Cuenta activada por el comprador (claim)')`,
+      [fullUser.id, fullUser.email]
+    );
+
+    const token = createToken(fullUser.id, fullUser.email, fullUser.role);
+    res.json({ token, user: sanitizeUser(fullUser) });
+  } catch (err: any) {
+    console.error('ClaimAccount error:', err);
+    res.status(500).json({ error: 'Error al activar la cuenta' });
   }
 }

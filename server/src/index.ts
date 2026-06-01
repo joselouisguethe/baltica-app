@@ -15,6 +15,7 @@ import settingsRoutes from './routes/settings.routes';
 import userSettingsRoutes from './routes/userSettings.routes';
 import surveysRoutes from './routes/surveys.routes';
 import diplomasRoutes from './routes/diplomas.routes';
+import statsRoutes from './routes/stats.routes';
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/settings', userSettingsRoutes);
 app.use('/api/admin/settings', settingsRoutes);
 app.use('/api/surveys', surveysRoutes);
 app.use('/api/diplomas', diplomasRoutes);
+app.use('/api/admin/stats', statsRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

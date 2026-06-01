@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '@/contexts/AppContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useAttribution } from '@/hooks/useAttribution';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, CreditCard, Zap, Crown, } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -23,6 +24,16 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
+// Hotmart checkout URLs per plan (the alternate "Comprar por Hotmart" channel).
+// Replace the placeholders with the real Hotmart product/offer checkout links
+// once configured; `?sck=` carries Hotmart's own click tracking.
+// See docs/dual-channel-sales-plan.md.
+const HOTMART_CHECKOUT: Record<string, string> = {
+  basico: 'https://pay.hotmart.com/REEMPLAZAR?off=BASICO&sck=baltica-landing',
+  intermedio: 'https://pay.hotmart.com/REEMPLAZAR?off=INTERMEDIO&sck=baltica-landing',
+  premium: 'https://pay.hotmart.com/REEMPLAZAR?off=PREMIUM&sck=baltica-landing',
+};
+
 export default function LandingPage() {
   const { t, locale, setLocale, theme, setTheme } = useApp();
   const navigate = useNavigate();
@@ -30,14 +41,25 @@ export default function LandingPage() {
   usePageTitle('Reto de 3 Días de Bienestar y Gestión del Estrés | Metodología Báltica');
   const es = locale.startsWith('es');
 
+  // Capture marketing attribution (utm_*) from the landing URL for CAC tracking.
+  useAttribution();
+
+  // Ruta 1 — compra directa por la página (Mercado Pago). Tagged source=direct.
   const goToRegister = () => {
     setMobileMenuOpen(false);
-    navigate('/auth?mode=register');
+    navigate('/auth?mode=register&source=direct');
   };
 
   const goToLogin = () => {
     setMobileMenuOpen(false);
     navigate('/auth?mode=login');
+  };
+
+  // Ruta 2 — compra por Hotmart (canal alterno, sin mezclar con los directos).
+  const goToHotmart = (planId: string) => {
+    setMobileMenuOpen(false);
+    const url = HOTMART_CHECKOUT[planId] || HOTMART_CHECKOUT.basico;
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -803,13 +825,25 @@ export default function LandingPage() {
                       })}
                     </ul>
   
-                    <Button
-                      className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'}`}
-                      onClick={goToRegister}
-                    >
-                      {locale.startsWith('es') ? 'Elegir plan' : 'Choose plan'}
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
+                    <div className="space-y-2">
+                      {/* Ruta 1: compra directa por la página → Mercado Pago */}
+                      <Button
+                        className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'}`}
+                        onClick={goToRegister}
+                      >
+                        <CreditCard className="h-4 w-4" />
+                        {es ? 'Comprar directo' : 'Buy directly'}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                      {/* Ruta 2: canal alterno → Hotmart */}
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-full font-semibold gap-2"
+                        onClick={() => goToHotmart(plan.id)}
+                      >
+                        {es ? 'Comprar por Hotmart' : 'Buy via Hotmart'}
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
