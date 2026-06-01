@@ -833,7 +833,7 @@ export default function LandingPage() {
                     <div className="space-y-2">
                       {/* Ruta 1: compra directa por la página → Mercado Pago */}
                       <Button
-                        className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'bg-white/15 hover:bg-white/25 text-white border border-white/30'}`}
+                        className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border border-input bg-background text-accent-foreground hover:bg-accent hover:text-accent-foreground'}`}
                         onClick={goToRegister}
                       >
                         <CreditCard className="h-4 w-4" />
