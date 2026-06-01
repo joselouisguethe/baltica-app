@@ -757,9 +757,9 @@ export default function LandingPage() {
                 icon: Crown,
                 name: 'Plan Premium',
                 duration: '',
-                regular: '$640.000',
-                launch: '$120.000',
-                promo: '8 meses',
+                regular: '$1.080.000',
+                launch: '$180.000',
+                promo: '12 meses',
                 features: [
                   'El código del hábito (Master Class)',
                   'De la intención a la acción (50 micro-acciones …)',

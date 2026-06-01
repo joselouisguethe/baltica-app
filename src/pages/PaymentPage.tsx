@@ -62,9 +62,9 @@ const PLANS = [
     icon: Crown,
     name: 'Plan Premium',
     duration: '',
-    promo: '8 meses' as string | null,
-    regular: '$640.000',
-    price: '$120.000',
+    promo: '12 meses' as string | null,
+    regular: '$1.080.000',
+    price: '$180.000',
     features: [
       'El código del hábito (Master Class)',
       'De la intención a la acción (50 micro-acciones …)',

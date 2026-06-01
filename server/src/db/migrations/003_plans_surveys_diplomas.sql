@@ -30,7 +30,7 @@ INSERT INTO plans (id, name, duration_months, regular_price, launch_price, featu
     "Descuento del 25% Reto Báltica 7 días",
     "Descuento del 15% Reto Báltica para el primer combo"
   ]'),
-  ('premium', 'Plan Premium', 6, 351590, 120000, '[
+  ('premium', 'Plan Premium', 12, 1080000, 180000, '[
     "Todo lo del Plan Intermedio",
     "El código de hábito: La masterclass de Neurociencia",
     "Protocolo de alto rendimiento (10 micro-acciones de impacto inmediato)",

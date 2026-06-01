@@ -9,7 +9,7 @@ import { env } from '../config/env';
 const PLAN_FALLBACK: Record<string, { days: number }> = {
   basico: { days: 30 },
   intermedio: { days: 90 },
-  premium: { days: 180 },
+  premium: { days: 360 },
 };
 
 // Maps a Hotmart product/offer to our internal plan_type.

@@ -4,4 +4,4 @@
 
 UPDATE plans SET launch_price = 45000  WHERE id = 'basico';
 UPDATE plans SET launch_price = 90000  WHERE id = 'intermedio';
-UPDATE plans SET launch_price = 120000 WHERE id = 'premium';
+UPDATE plans SET launch_price = 180000 WHERE id = 'premium';

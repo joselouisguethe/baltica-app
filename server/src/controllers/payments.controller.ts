@@ -15,7 +15,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3001';
 const PLAN_CONFIG: Record<string, { title: string; price: number; days: number }> = {
   basico:     { title: 'Báltica - Plan Básico',     price: 45000,  days: 30 },
   intermedio: { title: 'Báltica - Plan Intermedio',  price: 90000,  days: 90 },
-  premium:    { title: 'Báltica - Plan Premium',     price: 120000, days: 180 },
+  premium:    { title: 'Báltica - Plan Premium',     price: 180000, days: 360 },
 };
 
 // Resolve a plan from the DB (single source of truth), falling back to PLAN_CONFIG.
