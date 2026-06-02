@@ -563,7 +563,7 @@ export default function LandingPage() {
                   <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <p className="text-sm md:text-base text-foreground italic mb-2">"Las masterclass son excelentes y son el complemento perfecto para seguir practicando"</p>
+              <p className="text-sm md:text-base text-foreground italic mb-2">"Las masterclass excelente; y el complemento perfecto para seguir practicando"</p>
               <div className="text-xs font-bold text-muted-foreground mb-1">Mariale S. Bogotá D.C.</div>
             </div>
           </div>
@@ -659,8 +659,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { key: 'point1', icon: Brain, color: 'text-baltica-turquoise', bg: 'bg-baltica-turquoise/10', border: 'border-baltica-turquoise/30' },
-              { key: 'point2', icon: Heart, color: 'text-[hsl(var(--baltica-blue-mid))]', bg: 'bg-[hsl(var(--baltica-blue-mid))]/10', border: 'border-[hsl(var(--baltica-blue-mid))]/30' },
-              { key: 'point3', icon: Target, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
+              { key: 'point3', icon: Target, color: 'text-[hsl(var(--baltica-blue-mid))]', bg: 'bg-[hsl(var(--baltica-blue-mid))]/10', border: 'border-[hsl(var(--baltica-blue-mid))]/30' },
+              { key: 'point2', icon: Heart, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
             ].map((point, index) => (
               <motion.div
                 key={point.key}
@@ -745,7 +745,7 @@ export default function LandingPage() {
                 launch: '$90.000',
                 promo: '4 meses',
                 features: [
-                  'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión. \n(UNA SOLA VEZ)',
+                  'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.',
                   'Video Ciencia detrás del Reto Báltica',
                   'Protocolo de Alto Rendimiento. 10 microacciones de impacto inmediato.',
                   'INFOGRAFÍA. Protocolo de Alto Rendimiento.',
@@ -810,12 +810,13 @@ export default function LandingPage() {
                       {plan.features.map((feature, fi) => {
                         const isSpecial =
                           (plan.id === 'intermedio' && fi >= plan.features.length - 1) ||
-                          (plan.id === 'premium' && fi >= plan.features.length - 2);
+                          (plan.id === 'premium' && fi >= plan.features.length - 1);
                         return (
                           <li key={fi}
                             className="flex items-start gap-2 text-sm font-semibold">
                             <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                            {
+                            <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
+                            {/* {
                               feature.includes("UNA SOLA VEZ") ?
                                 <span>
                                   Para entender más:
@@ -823,7 +824,7 @@ export default function LandingPage() {
                                   <a className='border-b text-red-500' href='/Entender más sobre el GROUNDING.mp4'>(UNA SOLA VEZ)</a>
                                 </span> :
                                 <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
-                            }
+                            } */}
                             
                           </li>
                         )
