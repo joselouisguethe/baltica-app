@@ -94,12 +94,22 @@ export const api = {
   diplomas: {
     get: () => request('/diplomas'),
     issue: () => request('/diplomas', { method: 'POST' }),
+    // Public certificate verification (no auth required).
+    validate: (code: string) => request(`/diplomas/validate/${encodeURIComponent(code)}`),
   },
 
   surveys: {
-    get: () => request('/surveys'),
-    submit: (body: { first_name: string; last_name: string; phone: string; email: string; contact_authorized: boolean; responses?: Record<string, any> }) =>
-      request('/surveys', { method: 'POST', body: JSON.stringify(body) }),
+    // type defaults to 'close' server-side to preserve existing behavior.
+    get: (type?: 'start' | 'close') => request(`/surveys${type ? `?type=${type}` : ''}`),
+    submit: (body: {
+      type?: 'start' | 'close';
+      first_name?: string;
+      last_name?: string;
+      phone?: string;
+      email?: string;
+      contact_authorized?: boolean;
+      responses?: Record<string, any>;
+    }) => request('/surveys', { method: 'POST', body: JSON.stringify(body) }),
   },
 
   payments: {

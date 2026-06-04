@@ -11,6 +11,7 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 // Pages
 import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
+import HotmartLandingPage from "./pages/HotmartLandingPage";
 import AuthPage from "./pages/AuthPage";
 import ClaimPage from "./pages/ClaimPage";
 import OnboardingPage from "./pages/OnboardingPage";
@@ -28,13 +29,14 @@ import MethodologyPage from "./pages/MethodologyPage";
 import AdminDashboard from "./pages/AdminDashboard";
 import SatisfactionSurveyPage from "./pages/SatisfactionSurveyPage";
 import DiplomaPage from "./pages/DiplomaPage";
+import ValidateCertificatePage from "./pages/ValidateCertificatePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 // Protected Route wrapper - redirects to /landing if not authenticated
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, userEmail, onboardingCompleted, paymentCompleted } = useApp();
+  const { isAuthenticated, userEmail, onboardingCompleted, paymentCompleted, progress } = useApp();
   const { getUserStatus, isAdmin } = useAdmin();
   const location = useLocation();
 
@@ -51,6 +53,17 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const paymentExemptPaths = ['/onboarding', '/payment'];
   if (!paymentCompleted && !paymentExemptPaths.includes(location.pathname)) {
     return <Navigate to="/payment" replace />;
+  }
+
+  // Completion gate: the close survey and the diploma require the 3-day reto
+  // (days 0–3) to be finished. The server re-validates; this just prevents
+  // obviously-out-of-order direct-URL access.
+  const completionGatedPaths = ['/survey', '/diploma'];
+  if (completionGatedPaths.includes(location.pathname)) {
+    const allDaysDone = [0, 1, 2, 3].every((d) => progress.completedDays.includes(d));
+    if (!allDaysDone) {
+      return <Navigate to="/" replace />;
+    }
   }
 
   return <>{children}</>;
@@ -89,6 +102,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/landing" element={<LandingPage />} />
+      <Route path="/hotmart" element={<HotmartLandingPage />} />
       <Route
         path="/auth"
         element={
@@ -197,6 +211,9 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+
+      {/* Public certificate verification */}
+      <Route path="/validate/:code" element={<ValidateCertificatePage />} />
 
       {/* Info pages - accessible to all */}
       <Route path="/how-it-works" element={<HowItWorksPage />} />

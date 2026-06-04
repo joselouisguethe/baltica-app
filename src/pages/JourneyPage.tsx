@@ -23,6 +23,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { ArrowLeft, ArrowRight, Download, CheckCircle, Sparkles, Play } from 'lucide-react';
 import BalticaLogo from '@/components/brand/BalticaLogo';
+import { api } from '@/lib/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { dayContents, day0ExtendedContent, day1Content, valueOptions, timeSlotOptions } from '@/config/content';
@@ -180,6 +181,13 @@ export default function JourneyPage() {
 
   const nextStep = () => {
     if (dayNumber === 0) {
+      // Persist the mandatory intake (start) survey when leaving the baseline step.
+      // Server records it and advances journey_state -> 'active'.
+      if (DAY0_SUBSTEPS[day0Step] === 'survey-before') {
+        api.surveys
+          .submit({ type: 'start', responses: { mood: selectedMood, energy: selectedEnergy } })
+          .catch(() => {});
+      }
       // Day 0 uses its own sub-step system
       if (day0Step < DAY0_SUBSTEPS.length - 1) {
         setDay0Step(day0Step + 1);

@@ -19,7 +19,7 @@ export default function DiplomaPage() {
   usePageTitle(es ? 'Diploma' : 'Certificate');
 
   const [loading, setLoading] = useState(true);
-  const [diploma, setDiploma] = useState<{ id: string; issued_at: string } | null>(null);
+  const [diploma, setDiploma] = useState<{ id: string; issued_at: string; validation_code?: string } | null>(null);
   const [error, setError] = useState('');
   const [downloading, setDownloading] = useState(false);
 
@@ -174,6 +174,13 @@ export default function DiplomaPage() {
                   {issuedDate}
                 </div>
 
+                {/* Validation code — enables public verification */}
+                {diploma?.validation_code && (
+                  <div style={{ fontSize: '9px', color: '#7A8CA0', marginTop: '10px', letterSpacing: '0.5px' }}>
+                    {es ? 'Código de verificación' : 'Verification code'}: {diploma.validation_code}
+                  </div>
+                )}
+
                 {/* Decorative corners */}
                 <div style={{ position: 'absolute', top: '8px', left: '8px', width: '40px', height: '40px', borderTop: '2px solid #B0E090', borderLeft: '2px solid #B0E090' }} />
                 <div style={{ position: 'absolute', top: '8px', right: '8px', width: '40px', height: '40px', borderTop: '2px solid #B0E090', borderRight: '2px solid #B0E090' }} />
@@ -194,6 +201,18 @@ export default function DiplomaPage() {
               {es ? 'Volver al inicio' : 'Back to home'}
             </Button>
           </div>
+
+          {diploma?.validation_code && (
+            <p className="text-center text-xs text-muted-foreground mt-6">
+              {es ? 'Verifica la autenticidad de este certificado en ' : 'Verify the authenticity of this certificate at '}
+              <a
+                href={`/validate/${diploma.validation_code}`}
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                {`${window.location.origin}/validate/${diploma.validation_code}`}
+              </a>
+            </p>
+          )}
         </motion.div>
       </main>
       <EthicalFooter />

@@ -1,7 +1,16 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toast } from 'sonner';
 import { Locale, getTranslation, TranslationKey } from '@/lib/i18n';
 import { api, setToken, getToken } from '@/lib/api';
 import { getAttribution } from '@/hooks/useAttribution';
+
+export type JourneyState =
+  | 'registered'
+  | 'active'
+  | 'in_progress'
+  | 'completed'
+  | 'surveyed'
+  | 'certified';
 
 interface JourneyProgress {
   currentDay: number;
@@ -111,6 +120,9 @@ interface AppContextType {
   // Plan
   planType: string;
   setPlanType: (plan: string) => void;
+
+  // Journey state machine (server-authoritative)
+  journeyState: JourneyState;
 }
 
 const defaultProgress: JourneyProgress = {
@@ -186,6 +198,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return localStorage.getItem(userPrefix('planType')) || 'basico';
   });
 
+  const [journeyState, setJourneyState] = useState<JourneyState>('registered');
+
   const totalDays = 3; // MVP: Bienvenida (0) + 3 días
 
   // Reload per-user data when userEmail changes (login/logout)
@@ -203,6 +217,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Load data from API on mount if authenticated
   useEffect(() => {
     if (isAuthenticated && getToken()) {
+      // Re-sync the authoritative user record (journey state, payment, plan).
+      api.auth.me().then(data => {
+        if (data.user?.journey_state) setJourneyState(data.user.journey_state as JourneyState);
+        if (data.user?.status) {
+          const isPaid = data.user.status === 'active';
+          setPaymentCompletedState(isPaid);
+          localStorage.setItem(userPrefix('paymentCompleted', data.user.email), String(isPaid));
+        }
+        if (data.user?.plan_type) setPlanTypeState(data.user.plan_type);
+      }).catch(() => { /* offline / token expired — keep local state */ });
+
       // Load progress from API
       api.progress.get().then(data => {
         if (data.progress) {
@@ -264,6 +289,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (data.user.plan_type) {
       setPlanTypeState(data.user.plan_type);
       localStorage.setItem(userPrefix('planType', data.user.email), data.user.plan_type);
+    }
+
+    // Sync journey state machine
+    if (data.user.journey_state) {
+      setJourneyState(data.user.journey_state as JourneyState);
     }
   };
 
@@ -408,8 +438,45 @@ export function AppProvider({ children }: { children: ReactNode }) {
         lastCompletedDate: today,
       };
     });
-    // Sync to API
-    api.progress.completeDay(day).catch(() => {});
+    // Sync to API — server is authoritative. Apply its computed progress,
+    // refresh the journey state, and surface failures instead of silently dropping them.
+    api.progress.completeDay(day)
+      .then(data => {
+        if (data.progress) {
+          const p = data.progress;
+          setProgress(prev => ({
+            ...prev,
+            completedDays: p.completed_days ?? prev.completedDays,
+            currentDay: p.current_day ?? prev.currentDay,
+            currentStep: p.current_step ?? prev.currentStep,
+            streak: p.streak ?? prev.streak,
+            lastCompletedDate: p.last_completed_date ?? prev.lastCompletedDate,
+          }));
+        }
+        // Journey state may have advanced (in_progress / completed).
+        api.auth.me()
+          .then(d => d.user?.journey_state && setJourneyState(d.user.journey_state as JourneyState))
+          .catch(() => {});
+      })
+      .catch(err => {
+        // Out-of-order completion (409) or network/server error — reconcile from server.
+        toast.error(err?.error || 'No se pudo guardar tu avance. Reintentando…');
+        api.progress.get()
+          .then(data => {
+            if (data.progress) {
+              const p = data.progress;
+              setProgress(prev => ({
+                ...prev,
+                completedDays: p.completed_days ?? prev.completedDays,
+                currentDay: p.current_day ?? prev.currentDay,
+                currentStep: (p.current_step && p.current_step !== 'start') ? p.current_step : prev.currentStep,
+                streak: p.streak ?? prev.streak,
+                lastCompletedDate: p.last_completed_date ?? prev.lastCompletedDate,
+              }));
+            }
+          })
+          .catch(() => {});
+      });
   };
 
   const saveDayAnswers = (answers: Partial<DayAnswers>) => {
@@ -475,6 +542,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setPaymentCompleted,
       planType,
       setPlanType,
+      journeyState,
     }}>
       {children}
     </AppContext.Provider>
