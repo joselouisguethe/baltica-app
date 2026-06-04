@@ -1,6 +1,16 @@
 import { Response } from 'express';
 import { pool } from '../config/db';
 import { AuthRequest } from '../types';
+import { advanceState } from '../lib/state';
+
+// Days that must already be completed before a given day can be completed.
+// Enforces strict order and prevents skipping (Día 0 merges Día 1).
+const REQUIRED_PREDECESSORS: Record<number, number[]> = {
+  0: [],
+  1: [0],
+  2: [0, 1],
+  3: [0, 1, 2],
+};
 
 export async function getProgress(req: AuthRequest, res: Response) {
   try {
@@ -67,6 +77,20 @@ export async function completeDay(req: AuthRequest, res: Response) {
     }
 
     const completedDays: number[] = progress.completed_days || [];
+
+    // Validation: enforce sequential completion — no skipping ahead.
+    const required = REQUIRED_PREDECESSORS[day];
+    if (required === undefined) {
+      return res.status(400).json({ error: 'Día inválido' });
+    }
+    const missing = required.filter((d) => !completedDays.includes(d));
+    if (missing.length > 0) {
+      return res.status(409).json({
+        error: 'Debes completar los días anteriores en orden',
+        missing,
+      });
+    }
+
     if (!completedDays.includes(day)) {
       completedDays.push(day);
     }
@@ -107,6 +131,13 @@ export async function completeDay(req: AuthRequest, res: Response) {
        VALUES ($1, $2, 'day_completed', $3)`,
       [req.user!.userId, req.user!.email, `Día ${day} completado`]
     );
+
+    // State machine: first completion -> in_progress; all 4 days -> completed.
+    const finalDays: number[] = updated.rows[0].completed_days || completedDays;
+    await advanceState(req.user!.userId, 'in_progress');
+    if ([0, 1, 2, 3].every((d) => finalDays.includes(d))) {
+      await advanceState(req.user!.userId, 'completed');
+    }
 
     res.json({ progress: updated.rows[0] });
   } catch (err: any) {

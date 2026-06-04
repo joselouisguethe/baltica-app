@@ -52,6 +52,24 @@ function StatusBadge({ status }: { status: ManagedUser['status'] }) {
   return <Badge variant={c.variant} className={c.className}>{c.label}</Badge>;
 }
 
+// Visualizes the user's journey state machine
+// (registered → active → in_progress → completed → surveyed → certified).
+function JourneyStateBadge({ state }: { state: string }) {
+  const { locale } = useApp();
+  const es = locale.startsWith('es');
+  const config: Record<string, { label: string; className: string }> = {
+    registered:  { label: es ? 'Registrado' : 'Registered',  className: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' },
+    active:      { label: es ? 'Activo' : 'Active',           className: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' },
+    in_progress: { label: es ? 'En curso' : 'In progress',    className: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400' },
+    completed:   { label: es ? 'Completado' : 'Completed',     className: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400' },
+    surveyed:    { label: es ? 'Encuesta' : 'Surveyed',        className: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' },
+    certified:   { label: es ? 'Certificado' : 'Certified',    className: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
+  };
+  const c = config[state];
+  if (!c) return null;
+  return <Badge variant="outline" className={c.className}>{c.label}</Badge>;
+}
+
 function AddUserDialog() {
   const { addUser, defaultAccessDays } = useAdmin();
   const { t } = useApp();
@@ -161,9 +179,10 @@ function UserRow({ user }: { user: ManagedUser }) {
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setShowDetail(true)}>
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <p className="font-semibold text-foreground truncate">{user.name}</p>
                 <StatusBadge status={user.status} />
+                {user.journeyState && <JourneyStateBadge state={user.journeyState} />}
               </div>
               <p className="text-sm text-muted-foreground truncate">{user.email}</p>
             </div>

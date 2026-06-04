@@ -17,6 +17,7 @@ export interface ManagedUser {
   lastLogin?: string;
   paymentId?: string;
   notes?: string;
+  journeyState?: string;
 }
 
 export interface AccessLog {
@@ -66,6 +67,7 @@ function mapUser(row: any): ManagedUser {
     lastLogin: row.last_login_at,
     paymentId: row.payment_id,
     notes: row.notes,
+    journeyState: row.journey_state,
   };
 }
 
