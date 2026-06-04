@@ -50,7 +50,7 @@ const PLANS = [
     regular: '$320.000',
     price: '$90.000',
     features: [
-      'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.(UNA SOLA VEZ)',
+      'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.',
       'Video Ciencia detrás del Reto Báltica',
       'Protocolo de Alto Rendimiento. 10 microacciones de impacto inmediato.',
       'INFOGRAFÍA. Protocolo de Alto Rendimiento.',
@@ -263,15 +263,7 @@ export default function PaymentPage() {
                         <li key={fi}
                           className="flex items-start gap-2 text-sm font-semibold">
                           <Check className="w-4 h-4 mt-0.5 shrink-0 text-primary" />
-                          {
-                            feature.includes("UNA SOLA VEZ") ?
-                              <span>
-                                Para entender más:
-                                Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión. <br />
-                                <a className='border-b text-red-500' href='/Entender más sobre el GROUNDING.mp4'>(UNA SOLA VEZ)</a>
-                              </span> :
-                              <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
-                          }
+                          <span className={isSpecial ? 'text-lg font-bold' : ''}>{feature}</span>
                         </li>
                       )
                     })}

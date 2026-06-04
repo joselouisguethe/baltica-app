@@ -3,7 +3,7 @@ import { useApp } from '@/contexts/AppContext';
 import { usePageTitle } from '@/hooks/usePageTitle';
 import { useAttribution } from '@/hooks/useAttribution';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, CreditCard, Zap, Crown, } from 'lucide-react';
+import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, Zap, Crown, Leaf, } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate, Link } from 'react-router-dom';
 import BalticaLogo from '@/components/brand/BalticaLogo';
@@ -24,38 +24,42 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
-// Hotmart checkout URLs per plan (the alternate "Comprar por Hotmart" channel).
-// Replace the placeholders with the real Hotmart product/offer checkout links
-// once configured; `?sck=` carries Hotmart's own click tracking.
+// Hotmart-dedicated landing. Same Báltica brand and copy as the direct landing,
+// but every CTA routes to Hotmart's checkout (the lead-gen / discounted channel).
 // See docs/dual-channel-sales-plan.md.
+//
+// Hotmart checkout URLs per plan. Replace the placeholders with the real
+// Hotmart product/offer checkout links once configured; `?sck=` carries
+// Hotmart's own click tracking.
 const HOTMART_CHECKOUT: Record<string, string> = {
-  basico: 'https://pay.hotmart.com/REEMPLAZAR?off=BASICO&sck=baltica-landing',
-  intermedio: 'https://pay.hotmart.com/REEMPLAZAR?off=INTERMEDIO&sck=baltica-landing',
-  premium: 'https://pay.hotmart.com/REEMPLAZAR?off=PREMIUM&sck=baltica-landing',
+  basico: 'https://pay.hotmart.com/REEMPLAZAR?off=BASICO&sck=baltica-hotmart',
+  intermedio: 'https://pay.hotmart.com/REEMPLAZAR?off=INTERMEDIO&sck=baltica-hotmart',
+  premium: 'https://pay.hotmart.com/REEMPLAZAR?off=PREMIUM&sck=baltica-hotmart',
 };
 
-export default function LandingPage() {
+export default function HotmartLandingPage() {
   const { t, locale, setLocale, theme, setTheme } = useApp();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  usePageTitle('Reto de 3 Días de Bienestar y Gestión del Estrés | Metodología Báltica');
+  usePageTitle('Reto de 3 Días de Bienestar y Gestión del Estrés | Báltica en Hotmart');
   const es = locale.startsWith('es');
 
   // Capture marketing attribution (utm_*) from the landing URL for CAC tracking.
   useAttribution();
-
-  // Ruta 1 — compra directa por la página (Mercado Pago). Tagged source=direct.
-  const goToRegister = () => {
-    setMobileMenuOpen(false);
-    navigate('/auth?mode=register&source=direct');
-  };
 
   const goToLogin = () => {
     setMobileMenuOpen(false);
     navigate('/auth?mode=login');
   };
 
-  // Ruta 2 — compra por Hotmart (canal alterno, sin mezclar con los directos).
+  // Generic CTAs can't pick a plan, so they scroll the user to the plans grid
+  // where each plan has its own Hotmart checkout button.
+  const scrollToPlans = () => {
+    setMobileMenuOpen(false);
+    document.getElementById('planes')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Hotmart channel — compra por Hotmart (canal de leads, oferta con descuento).
   const goToHotmart = (planId: string) => {
     setMobileMenuOpen(false);
     const url = HOTMART_CHECKOUT[planId] || HOTMART_CHECKOUT.basico;
@@ -94,7 +98,7 @@ export default function LandingPage() {
                     className={cn(locale === loc.code && 'bg-accent')}
                   >
                     <span className="mr-2">{loc.flag}</span>
-                    <p className='w-full text-center'>{loc.label}</p>                    
+                    <p className='w-full text-center'>{loc.label}</p>
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -116,7 +120,7 @@ export default function LandingPage() {
             </Button>
 
             {/* Big CTA — visible on md+ only */}
-            <Button size="sm" onClick={goToRegister} className="hidden md:inline-flex">
+            <Button size="sm" onClick={scrollToPlans} className="hidden md:inline-flex">
               {t('landing.cta')}
             </Button>
 
@@ -139,7 +143,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               className="w-full gap-2 px-6 py-4 text-sm font-semibold rounded-full shadow-soft whitespace-normal text-center leading-tight"
-              onClick={goToRegister}
+              onClick={scrollToPlans}
             >
               {t('landing.cta')}
               <ArrowRight className="h-4 w-4 shrink-0" />
@@ -148,83 +152,90 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* ===== SECTION 1: HERO (text only, full width) ===== */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.span
-            className="inline-block text-xs font-semibold tracking-wider uppercase px-3 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 mb-6"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {t('landing.pretitle' as any)}
-          </motion.span>
-
-          <motion.h1
-            className="mb-6"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <span className="block text-3xl md:text-4xl lg:text-6xl font-bold text-primary leading-tight mb-2">
-              {t('landing.headline1' as any)}
-            </span>
-            <span className="block text-xl md:text-2xl lg:text-4xl font-medium text-foreground leading-snug">
-              {t('landing.headline2' as any)}
-            </span>
-          </motion.h1>
-
-          <motion.p
-            className="text-base md:text-lg text-muted-foreground leading-relaxed"
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            {t('landing.subtitle')}
-          </motion.p>
-        </div>
-      </section>
-
-      {/* ===== VIDEO SECTION + CTA ===== */}
-      <section className="pb-10 md:pb-14">
-        <div className="container mx-auto px-4 max-w-5xl">
+      {/* ===== SECTION 1: HERO (two-column: copy + image with feature card) ===== */}
+      <section className="container mx-auto px-4 py-12 md:py-20">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-12 items-center">
+          {/* Left: copy */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
+            className="text-center lg:text-left"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-            className="rounded-2xl overflow-hidden shadow-soft"
           >
-            <video
-              src="/Video 30 seg HORIZONTAL LP.mp4"
-              className="w-full h-auto block"
-              autoPlay
-              muted
-              loop
-              playsInline
-              controls
-            />
-          </motion.div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#102050] dark:text-white leading-tight mb-5">
+              {es ? 'Aprende a regular tu estrés en solo 3 días.' : 'Learn to regulate your stress in just 3 days.'}
+            </h1>
 
-          {/* CTA below video */}
-          <motion.div
-            className="text-center mt-8"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.4, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-          >
+            <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-6 max-w-xl mx-auto lg:mx-0">
+              {es
+                ? 'Un reto práctico, científicamente probado, para más calma, claridad y bienestar mental en tu día a día.'
+                : 'A practical, scientifically proven challenge for more calm, clarity and mental wellbeing in your daily life.'}
+            </p>
+
+            {/* Trust line */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 text-muted-foreground mb-7">
+              <Brain className="h-5 w-5 text-[#10B0C0]" />
+              <span className="text-base font-medium">
+                {es ? 'Basado en neurociencia' : 'Based on neuroscience'}
+              </span>
+            </div>
+
+            {/* Primary CTA */}
             <Button
               size="lg"
-              className="gap-2 px-8 py-6 text-base font-semibold rounded-full shadow-soft"
-              onClick={goToRegister}
+              onClick={scrollToPlans}
+              className="gap-2 px-10 py-6 text-base md:text-lg font-semibold rounded-full shadow-soft bg-[#10B0C0] hover:bg-[#0e9aaa] text-white whitespace-normal text-center leading-tight"
             >
-              {t('landing.cta')}
-              <ArrowRight className="h-5 w-5" />
+              {es ? 'Comenzar ahora' : 'Start now'}
+              <ArrowRight className="h-5 w-5 shrink-0" />
             </Button>
-            <p className="text-sm text-muted-foreground mt-4">
-              {t('landing.microcopy' as any)}
-            </p>
+
+            {/* Secure payment reassurance */}
+            <div className="flex items-center justify-center lg:justify-start gap-2 mt-4 text-sm font-medium text-green-600 dark:text-green-400">
+              <Check className="h-4 w-4 shrink-0" />
+              <span>{es ? 'Pago 100% seguro a través de Hotmart' : '100% secure payment via Hotmart'}</span>
+            </div>
+          </motion.div>
+
+          {/* Right: image + floating feature card */}
+          <motion.div
+            className="relative mt-6 lg:mt-0"
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.15, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <img
+              src="/hero-img.jpg"
+              alt={es ? 'Persona en calma practicando bienestar' : 'Calm person practicing wellbeing'}
+              className="w-full h-auto rounded-3xl shadow-soft object-cover"
+              loading="eager"
+            />
+
+            {/* Floating "3 DÍAS" feature card */}
+            <div className="absolute -bottom-6 right-3 sm:right-6 bg-card/95 backdrop-blur rounded-2xl shadow-lg border border-border/40 p-5 sm:p-6 w-[14.5rem] sm:w-[16rem]">
+              <div className="text-center mb-4">
+                <div className="text-3xl font-bold text-[#10B0C0] leading-none">
+                  {es ? '3 DÍAS' : '3 DAYS'}
+                </div>
+                <div className="text-sm text-muted-foreground mt-1 leading-snug">
+                  {es ? 'para transformar tu mente y tu vida' : 'to transform your mind and your life'}
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                {[
+                  { icon: Leaf, label: es ? 'Calma' : 'Calm' },
+                  { icon: Focus, label: es ? 'Enfoque' : 'Focus' },
+                  { icon: Heart, label: es ? 'Bienestar' : 'Wellbeing' },
+                ].map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex flex-col items-center gap-1">
+                    <div className="w-9 h-9 rounded-full bg-[#10B0C0]/10 flex items-center justify-center">
+                      <Icon className="h-4 w-4 text-[#10B0C0]" />
+                    </div>
+                    <span className="text-xs font-medium text-foreground">{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -563,82 +574,10 @@ export default function LandingPage() {
                   <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <p className="text-sm md:text-base text-foreground italic mb-2">"Las masterclass excelente; y el complemento perfecto para seguir practicando"</p>
+              <p className="text-sm md:text-base text-foreground italic mb-2">"Las masterclass son excelentes y son el complemento perfecto para seguir practicando"</p>
               <div className="text-xs font-bold text-muted-foreground mb-1">Mariale S. Bogotá D.C.</div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* ===== TESTIMONIALS ===== */}
-      {/* <section className="py-16 md:py-20">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <motion.h2
-            className="text-2xl md:text-3xl font-bold text-foreground mb-10 text-center"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.4 }}
-          >
-            {locale.startsWith('es') ? 'Lo que dicen quienes ya lo hicieron' : 'What people who did it say'}
-          </motion.h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              { quote: 'Pensé que sería otro contenido más, pero el primer ejercicio ya me hizo sentir diferente.', author: 'Daniel M.', location: 'Bogotá (Cundinamarca)', stars: 5 },
-              { quote: 'Logré eliminar varios malos hábitos frente a redes sociales y uso del celular.', author: 'Gloria M.', location: 'Pereira (Risaralda)', stars: 5 },
-              { quote: 'Pensé que necesitaría mucho tiempo, pero en menos de 10 minutos al día ya sentía cambios.', author: 'Héctor H.', location: 'Pereira (Risaralda)', stars: 4.5 },
-              { quote: 'Antes me sentía constantemente estresado. Después de hacer el reto logré encontrar momentos de calma que no tenía hace mucho tiempo.', author: 'Mauricio L.', location: 'Cali (Valle)', stars: 5 },
-              { quote: 'En menos de 10 minutos al día logré sentir más calma mental.', author: 'Laura M.', location: 'Bogotá D.C.', stars: 4.5 },
-              { quote: 'Las masterclass son excelentes y son el complemento perfecto para seguir practicando.', author: 'Mariale S.', location: 'Bogotá D.C.', stars: 5 },
-              { quote: 'Hace meses sentía que mi mente estaba saturada por el trabajo. Encontré este reto casi por casualidad y decidí probarlo. Los ejercicios son simples, pero efectivos. Después de hacerlo sentí más claridad mental y tranquilidad. Lo recomiendo a cualquiera que necesite reconectar consigo mismo.', author: 'Vanesa R.', location: 'Cali (Valle)', stars: 5 },
-              { quote: 'Muy fácil de seguir. Vale completamente la pena.', author: 'Julio C.', location: 'Pereira (Risaralda)', stars: 5 },
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                className="p-5 rounded-2xl bg-card border border-border/40 shadow-card flex flex-col"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ delay: i * 0.08, duration: 0.4 }}
-              >
-                <Quote className="h-5 w-5 text-primary/40 mb-2 rotate-180" />
-                <p className="text-sm text-foreground leading-relaxed italic flex-1 mb-3">
-                  "{item.quote}"
-                </p>
-                <div className="flex items-center gap-0.5 mb-2">
-                  {Array.from({ length: Math.floor(item.stars) }).map((_, s) => (
-                    <Star key={s} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                  ))}
-                  {item.stars % 1 !== 0 && <StarHalf className="h-4 w-4 fill-amber-400 text-amber-400" />}
-                </div>
-                <p className="text-sm font-semibold text-foreground">— {item.author}</p>
-                <p className="text-xs text-muted-foreground">{item.location}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
-      {/* ===== VIDEO CORTO (placeholder — pending from client) ===== */}
-      <section className="py-12 md:py-16 bg-muted/30">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <motion.div
-            className="aspect-video rounded-2xl flex flex-col items-center justify-center text-muted-foreground"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.4 }}
-          >
-            <video
-              src="/La_Reto_Baltica.mp4"
-              className="w-full sm:w-1/2 h-auto block rounded-2xl"
-              autoPlay
-              loop
-              playsInline
-              controls
-            />
-          </motion.div>
         </div>
       </section>
 
@@ -659,8 +598,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { key: 'point1', icon: Brain, color: 'text-baltica-turquoise', bg: 'bg-baltica-turquoise/10', border: 'border-baltica-turquoise/30' },
-              { key: 'point3', icon: Target, color: 'text-[hsl(var(--baltica-blue-mid))]', bg: 'bg-[hsl(var(--baltica-blue-mid))]/10', border: 'border-[hsl(var(--baltica-blue-mid))]/30' },
-              { key: 'point2', icon: Heart, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
+              { key: 'point2', icon: Heart, color: 'text-[hsl(var(--baltica-blue-mid))]', bg: 'bg-[hsl(var(--baltica-blue-mid))]/10', border: 'border-[hsl(var(--baltica-blue-mid))]/30' },
+              { key: 'point3', icon: Target, color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
             ].map((point, index) => (
               <motion.div
                 key={point.key}
@@ -693,13 +632,13 @@ export default function LandingPage() {
               {`Hace meses sentía que mi mente estaba saturada por el trabajo.\nEncontré este reto casi por casualidad y decidí probarlo.\nLos ejercicios son simples, pero efectivos.\nDespués de hacerlo sentí más claridad mental y tranquilidad.\nLo recomiendo a cualquiera que necesite reconectar consigo mismo.`}
             </p>
             <div className="text-xs font-bold text-muted-foreground mb-1">— Vanesa R., Cali (Valle)</div>
- 
+
           </div>
         </div>
       </section>
 
       {/* ===== SECTION 7: CIERRE Y CTA FINAL ===== */}
-      <section className="py-16 md:py-24 bg-baltica-navy text-white">
+      <section id="planes" className="py-16 md:py-24 bg-baltica-navy text-white scroll-mt-32">
         <div className="container mx-auto px-4 max-w-6xl">
           <motion.h2
             className="text-2xl md:text-3xl font-bold mb-6 text-center"
@@ -804,13 +743,13 @@ export default function LandingPage() {
                       </div>
                     </div>
                   </CardHeader>
-  
+
                   <CardContent className="pt-0 pb-4 flex-1 flex flex-col">
                     <ul className="space-y-2 flex-1 mb-4">
                       {plan.features.map((feature, fi) => {
                         const isSpecial =
                           (plan.id === 'intermedio' && fi >= plan.features.length - 1) ||
-                          (plan.id === 'premium' && fi >= plan.features.length - 1);
+                          (plan.id === 'premium' && fi >= plan.features.length - 2);
                         return (
                           <li key={fi}
                             className="flex items-start gap-2 text-sm font-semibold">
@@ -820,25 +759,16 @@ export default function LandingPage() {
                         )
                       })}
                     </ul>
-  
+
                     <div className="space-y-2">
-                      {/* Ruta 1: compra directa por la página → Mercado Pago */}
+                      {/* Canal Hotmart → checkout por plan (oferta de leads con descuento). */}
                       <Button
                         className={`w-full rounded-full font-semibold gap-2 ${plan.highlight ? 'bg-primary hover:bg-primary/90 text-primary-foreground' : 'border border-input bg-background text-accent-foreground hover:bg-accent hover:text-accent-foreground'}`}
-                        onClick={goToRegister}
-                      >
-                        <CreditCard className="h-4 w-4" />
-                        {es ? 'Comprar directo' : 'Buy directly'}
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                      {/* Ruta 2: canal alterno → Hotmart — temporalmente oculto. Restaurar cuando el canal Hotmart esté listo. */}
-                      {/* <Button
-                        variant="outline"
-                        className="w-full rounded-full font-semibold gap-2"
                         onClick={() => goToHotmart(plan.id)}
                       >
                         {es ? 'Comprar por Hotmart' : 'Buy via Hotmart'}
-                      </Button> */}
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -856,7 +786,7 @@ export default function LandingPage() {
             <Button
               size="lg"
               className="gap-2 px-10 py-6 text-base font-semibold rounded-full shadow-soft bg-primary hover:bg-primary/90 text-primary-foreground"
-              onClick={goToRegister}
+              onClick={scrollToPlans}
             >
               {t('landing.cta')}
               <ArrowRight className="h-5 w-5" />

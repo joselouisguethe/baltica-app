@@ -11,6 +11,7 @@ import { NotificationProvider } from "./contexts/NotificationContext";
 // Pages
 import Index from "./pages/Index";
 import LandingPage from "./pages/LandingPage";
+import HotmartLandingPage from "./pages/HotmartLandingPage";
 import AuthPage from "./pages/AuthPage";
 import ClaimPage from "./pages/ClaimPage";
 import OnboardingPage from "./pages/OnboardingPage";
@@ -89,6 +90,7 @@ function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/landing" element={<LandingPage />} />
+      <Route path="/hotmart" element={<HotmartLandingPage />} />
       <Route
         path="/auth"
         element={
