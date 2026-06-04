@@ -13,18 +13,30 @@ const PLAN_FALLBACK: Record<string, { days: number }> = {
 };
 
 // Maps a Hotmart product/offer to our internal plan_type.
-// Key format: `${productId}:${offerCode}`, with `${productId}:default` as the
-// per-product fallback. Fill these from the Hotmart dashboard once offers exist.
-// Product 7769917 = "Báltica Education - Reto Baltica".
+//   - productId = data.product.id (numeric) from the webhook payload — 7769917.
+//   - offerCode = data.purchase.offer.code (ALPHANUMERIC, e.g. "w32kp5a7").
+// Two key shapes are supported (resolvePlanType tries them in order):
+//   1. `${productId}:${offerCode}` — strictest, scoped to this product.
+//   2. `${offerCode}`              — offer-code-only fallback. Offer codes are unique,
+//      so this still maps correctly even if the product id ever differs from 7769917
+//      (prevents a silent downgrade of every purchase to 'basico').
+// Offer codes configured in Hotmart → Producto → Ofertas (see HOTMART_SETUP.md).
 const HOTMART_PLAN_MAP: Record<string, 'basico' | 'intermedio' | 'premium'> = {
   '7769917:default': 'basico',
-  // '7769917:OFFER_INTERMEDIO': 'intermedio',
-  // '7769917:OFFER_PREMIUM': 'premium',
+  // Product-scoped
+  '7769917:w32kp5a7': 'basico',
+  '7769917:d67r8at1': 'intermedio',
+  '7769917:8wk6nu6z': 'premium',
+  // Offer-code-only fallback (robust to product-id changes)
+  'w32kp5a7': 'basico',
+  'd67r8at1': 'intermedio',
+  '8wk6nu6z': 'premium',
 };
 
 function resolvePlanType(productId?: string | number, offerCode?: string): 'basico' | 'intermedio' | 'premium' {
   const pid = productId != null ? String(productId) : '';
   if (offerCode && HOTMART_PLAN_MAP[`${pid}:${offerCode}`]) return HOTMART_PLAN_MAP[`${pid}:${offerCode}`];
+  if (offerCode && HOTMART_PLAN_MAP[offerCode]) return HOTMART_PLAN_MAP[offerCode];
   if (HOTMART_PLAN_MAP[`${pid}:default`]) return HOTMART_PLAN_MAP[`${pid}:default`];
   return 'basico';
 }

@@ -5,7 +5,9 @@ import { useAttribution } from '@/hooks/useAttribution';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, Zap, Crown, Leaf, } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { useNavigate, Link } from 'react-router-dom';
+import { getCheckoutUrl } from '@/config/hotmart';
 import BalticaLogo from '@/components/brand/BalticaLogo';
 import { EthicalNote } from '@/components/EthicalNote';
 import { locales } from '@/lib/i18n';
@@ -26,17 +28,7 @@ import { cn } from '@/lib/utils';
 
 // Hotmart-dedicated landing. Same Báltica brand and copy as the direct landing,
 // but every CTA routes to Hotmart's checkout (the lead-gen / discounted channel).
-// See docs/dual-channel-sales-plan.md.
-//
-// Hotmart checkout URLs per plan. Replace the placeholders with the real
-// Hotmart product/offer checkout links once configured; `?sck=` carries
-// Hotmart's own click tracking.
-const HOTMART_CHECKOUT: Record<string, string> = {
-  basico: 'https://pay.hotmart.com/REEMPLAZAR?off=BASICO&sck=baltica-hotmart',
-  intermedio: 'https://pay.hotmart.com/REEMPLAZAR?off=INTERMEDIO&sck=baltica-hotmart',
-  premium: 'https://pay.hotmart.com/REEMPLAZAR?off=PREMIUM&sck=baltica-hotmart',
-};
-
+// Checkout links live in src/config/hotmart.ts (see HOTMART_SETUP.md).
 export default function HotmartLandingPage() {
   const { t, locale, setLocale, theme, setTheme } = useApp();
   const navigate = useNavigate();
@@ -62,7 +54,16 @@ export default function HotmartLandingPage() {
   // Hotmart channel — compra por Hotmart (canal de leads, oferta con descuento).
   const goToHotmart = (planId: string) => {
     setMobileMenuOpen(false);
-    const url = HOTMART_CHECKOUT[planId] || HOTMART_CHECKOUT.basico;
+    const url = getCheckoutUrl(planId, 'baltica-hotmart');
+    if (!url) {
+      // Link not configured yet — never send the user to Hotmart's 008 error page.
+      toast.error(
+        es
+          ? 'El pago de este plan aún no está disponible. Estamos finalizando la configuración.'
+          : 'Checkout for this plan is not available yet. We are finishing the setup.',
+      );
+      return;
+    }
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 

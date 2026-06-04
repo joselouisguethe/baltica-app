@@ -5,7 +5,9 @@ import { useAttribution } from '@/hooks/useAttribution';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ArrowDown, Globe, Moon, Sun, Check, Focus, Target, Heart, Brain, Briefcase, Smartphone, HeartHandshake, Star, StarHalf, Quote, Play, Menu, X, CreditCard, Zap, Crown, } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import { useNavigate, Link } from 'react-router-dom';
+import { getCheckoutUrl } from '@/config/hotmart';
 import BalticaLogo from '@/components/brand/BalticaLogo';
 import { EthicalNote } from '@/components/EthicalNote';
 import { locales } from '@/lib/i18n';
@@ -24,15 +26,8 @@ import {
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 
-// Hotmart checkout URLs per plan (the alternate "Comprar por Hotmart" channel).
-// Replace the placeholders with the real Hotmart product/offer checkout links
-// once configured; `?sck=` carries Hotmart's own click tracking.
-// See docs/dual-channel-sales-plan.md.
-const HOTMART_CHECKOUT: Record<string, string> = {
-  basico: 'https://pay.hotmart.com/REEMPLAZAR?off=BASICO&sck=baltica-landing',
-  intermedio: 'https://pay.hotmart.com/REEMPLAZAR?off=INTERMEDIO&sck=baltica-landing',
-  premium: 'https://pay.hotmart.com/REEMPLAZAR?off=PREMIUM&sck=baltica-landing',
-};
+// Hotmart checkout links live in src/config/hotmart.ts (see HOTMART_SETUP.md).
+// This page is the direct channel, so it tags clicks with sck=baltica-landing.
 
 export default function LandingPage() {
   const { t, locale, setLocale, theme, setTheme } = useApp();
@@ -58,7 +53,15 @@ export default function LandingPage() {
   // Ruta 2 — compra por Hotmart (canal alterno, sin mezclar con los directos).
   const goToHotmart = (planId: string) => {
     setMobileMenuOpen(false);
-    const url = HOTMART_CHECKOUT[planId] || HOTMART_CHECKOUT.basico;
+    const url = getCheckoutUrl(planId, 'baltica-landing');
+    if (!url) {
+      toast.error(
+        es
+          ? 'El pago de este plan aún no está disponible. Estamos finalizando la configuración.'
+          : 'Checkout for this plan is not available yet. We are finishing the setup.',
+      );
+      return;
+    }
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
