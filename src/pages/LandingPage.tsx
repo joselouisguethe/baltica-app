@@ -94,10 +94,10 @@ export default function LandingPage() {
                   <DropdownMenuItem
                     key={loc.code}
                     onClick={() => setLocale(loc.code)}
-                    className={cn(locale === loc.code && 'bg-accent')}
+                    className={`${cn(locale === loc.code && 'bg-accent')} justify-center`}
                   >
                     <span className="mr-2">{loc.flag}</span>
-                    <p className='w-full text-center'>{loc.label}</p>                    
+                    <p className='text-center'>{loc.label}</p>                    
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -566,7 +566,7 @@ export default function LandingPage() {
                   <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <p className="text-sm md:text-base text-foreground italic mb-2">"Las masterclass excelente; y el complemento perfecto para seguir practicando"</p>
+              <p className="text-sm md:text-base text-foreground italic mb-2">"La masterclass excelente; y el complemento perfecto para seguir practicando"</p>
               <div className="text-xs font-bold text-muted-foreground mb-1">Mariale S. Bogotá D.C.</div>
             </div>
           </div>

@@ -21,7 +21,7 @@ export const translations = {
     'landing.headline2': 'Aprende a regular tu salud mental y a instalar microhábitos saludables con este programa.',
     'landing.subtitle': 'No necesitas más motivación, el Reto Báltica de 3 días, es neurociencia aplicada, diseñada para personas mentalmente agotadas, viven en modo estrés, empiezan hábitos y los abandonan, se tratan con dureza, no tienen tiempo para procesos largos, buscan mejorar su bienestar emocional, con herramientas científicas, invirtiendo tan solo 10 minutos por día.',
     'landing.cta': 'SÍ, QUIERO REGULAR MI MENTE AHORA',
-    'landing.microcopy': 'Acceso inmediato por 1 mes',
+    'landing.microcopy': 'Acceso inmediato por',
     // Landing - El Problema
     'landing.problem.title': '¿Te suena familiar este agotamiento silencioso?',
     'landing.problem.intro': 'No es solo cansancio físico. Es una sobrecarga mental que te persigue, una sensación de desborde donde por más que intentas "controlar" tus pensamientos, estos vuelven con más fuerza, como una pelota de playa que intentas hundir en el agua.',
@@ -29,7 +29,7 @@ export const translations = {
     'landing.problem.point1': 'Sientes que vives en estrés constante: Llegas al final del día agotado y con la sensación de no haber estado realmente presente ni un minuto.',
     'landing.problem.point2': 'Tu descanso no repara: Aunque duermas, te levantas con tensión en la mandíbula, dolor de espalda o fatiga mental acumulada.',
     'landing.problem.point3': 'La ansiedad leve te domina: Sientes una "prisa interna" constante, irritabilidad o dificultad para concentrarte en una sola tarea.',
-    'landing.problem.point4': 'O simplemente buscar cambiar conductas de manera estructurada: no más intentos sueltos, sin improvisar, guía clara, pasos concretos. Sin depender de la motivación del momento.',
+    'landing.problem.point4': 'O simplemente busca cambiar conductas de manera estructurada: no más intentos sueltos, sin improvisar, guía clara, pasos concretos. Sin depender de la motivación del momento.',
     'landing.problem.point5': 'Quieres herramientas prácticas para tu salud mental, sin teoría aburrida ni misticismo. Buscas ciencia, no magia.',
     'landing.problem.transition': 'Si marcaste al menos una, sigue leyendo.',
     // Landing - La Solución
@@ -69,7 +69,7 @@ export const translations = {
     'landing.authority.body': '',
     'landing.authority.also': '',
     'landing.authority.point1.title': 'Grounding',
-    'landing.authority.point1.desc': 'Reduce tu ansiedad un 30% en solo 5 minutos. Avalado por expertas de la Universidad de Harvard y la Asociación Americana de Psicología (APA). Además, investigaciones publicadas en PubMed comprueban que aplicar esta técnica regula la hormona del estrés casi de inmediato.',
+    'landing.authority.point1.desc': 'Reduce tu ansiedad un 30% en solo 5 minutos. Avalado por expertos de la Universidad de Harvard y la Asociación Americana de Psicología (APA). Además, investigaciones publicadas en PubMed comprueban que aplicar esta técnica regula la hormona del estrés casi de inmediato.',
     'landing.authority.point2.title': 'Autocompasión',
     'landing.authority.point2.desc': 'La clave empírica para crear hábitos que duren. La Dra. Kristin Neff (Universidad de Texas) y la APA han demostrado mediante estudios neurobiológicos que esta práctica desactiva tu centro cerebral del miedo, frenando el autosabotaje en seco.',
     'landing.authority.point3.title': 'Acción con Propósito',
@@ -531,7 +531,7 @@ export const translations = {
     'landing.headline2': 'Aprende a regular tu salud mental y a instalar microhábitos saludables con este programa.',
     'landing.subtitle': 'No necesitas más motivación, el Reto Báltica de 3 días, es neurociencia aplicada, diseñada para personas mentalmente agotadas, viven en modo estrés, empiezan hábitos y los abandonan, se tratan con dureza, no tienen tiempo para procesos largos, buscan mejorar su bienestar emocional, con herramientas científicas, invirtiendo tan solo 10 minutos por día.',
     'landing.cta': 'SÍ, QUIERO REGULAR MI MENTE AHORA',
-    'landing.microcopy': 'Acceso inmediato por 1 mes',
+    'landing.microcopy': 'Acceso inmediato por',
     // Landing - El Problema
     'landing.problem.title': '¿Te suena familiar este agotamiento silencioso?',
     'landing.problem.intro': 'No es solo cansancio físico. Es una sobrecarga mental que te persigue, una sensación de desborde donde por más que intentas "controlar" tus pensamientos, estos vuelven con más fuerza, como una pelota de playa que intentas hundir en el agua.',
@@ -539,7 +539,7 @@ export const translations = {
     'landing.problem.point1': 'Sientes que vives en estrés constante: Llegas al final del día agotado y con la sensación de no haber estado realmente presente ni un minuto.',
     'landing.problem.point2': 'Tu descanso no repara: Aunque duermas, te levantas con tensión en la mandíbula, dolor de espalda o fatiga mental acumulada.',
     'landing.problem.point3': 'La ansiedad leve te domina: Sientes una "prisa interna" constante, irritabilidad o dificultad para concentrarte en una sola tarea.',
-    'landing.problem.point4': 'O simplemente buscar cambiar conductas de manera estructurada: no más intentos sueltos, sin improvisar, guía clara, pasos concretos. Sin depender de la motivación del momento.',
+    'landing.problem.point4': 'O simplemente busca cambiar conductas de manera estructurada: no más intentos sueltos, sin improvisar, guía clara, pasos concretos. Sin depender de la motivación del momento.',
     'landing.problem.point5': 'Quieres herramientas prácticas para tu salud mental, sin teoría aburrida ni misticismo. Buscas ciencia, no magia.',
     'landing.problem.transition': 'Si marcaste al menos una, sigue leyendo.',
     // Landing - La Solución
@@ -579,7 +579,7 @@ export const translations = {
     'landing.authority.body': '',
     'landing.authority.also': '',
     'landing.authority.point1.title': 'Grounding',
-    'landing.authority.point1.desc': 'Reduce tu ansiedad un 30% en solo 5 minutos. Avalado por expertas de la Universidad de Harvard y la Asociación Americana de Psicología (APA). Además, investigaciones publicadas en PubMed comprueban que aplicar esta técnica regula la hormona del estrés casi de inmediato.',
+    'landing.authority.point1.desc': 'Reduce tu ansiedad un 30% en solo 5 minutos. Avalado por expertos de la Universidad de Harvard y la Asociación Americana de Psicología (APA). Además, investigaciones publicadas en PubMed comprueban que aplicar esta técnica regula la hormona del estrés casi de inmediato.',
     'landing.authority.point2.title': 'Autocompasión',
     'landing.authority.point2.desc': 'La clave empírica para crear hábitos que duren. La Dra. Kristin Neff (Universidad de Texas) y la APA han demostrado mediante estudios neurobiológicos que esta práctica desactiva tu centro cerebral del miedo, frenando el autosabotaje en seco.',
     'landing.authority.point3.title': 'Acción con Propósito',
