@@ -50,11 +50,11 @@ const PLANS = [
     regular: '$320.000',
     price: '$90.000',
     features: [
-      'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.',
+      'Para profundizar: videos sobre Grounding, Acción con Propósito y Autocompasión',
       'Video Ciencia detrás del Reto Báltica',
       'Protocolo de Alto Rendimiento. 10 microacciones de impacto inmediato.',
       'INFOGRAFÍA. Protocolo de Alto Rendimiento.',
-      '30% sobre el siguiente RETO.',
+      '-30% sobre el siguiente RETO.',
     ],
     highlight: false,
   },
@@ -71,7 +71,7 @@ const PLANS = [
       'MASTERCLASS El Código del Habito.',
       'De la intención a la Acción. 50 micro acciones con propósito para transformar tu día.',
       'INFOGRAFÍA. De la intención a la Acción.',
-      'Próximos 2 Retos Báltica con el 60% de descuentos.'
+      'Próximos 2 Retos Báltica con el de descuentos.'
     ],
     highlight: true,
   },

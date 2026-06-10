@@ -685,7 +685,7 @@ export default function HotmartLandingPage() {
                 launch: '$90.000',
                 promo: '4 meses',
                 features: [
-                  'Para entender más: Videos sobre ampliación de Grounding, Acción con Propósito, Autocompasión.',
+                  'Para profundizar: videos sobre Grounding, Acción con Propósito y Autocompasión',
                   'Video Ciencia detrás del Reto Báltica',
                   'Protocolo de Alto Rendimiento. 10 microacciones de impacto inmediato.',
                   'INFOGRAFÍA. Protocolo de Alto Rendimiento.',
